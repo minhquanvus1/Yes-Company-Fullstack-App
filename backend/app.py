@@ -5,6 +5,7 @@ from flask_cors import CORS
 from models import db, setup_db, Customer, Product, Order, OrderItem, CheckOutOrder
 from datetime import datetime
 from sqlalchemy import extract, desc
+from auth import AuthError, requires_auth
 
 def create_app(test_config=None):
   # create and configure the app
@@ -309,6 +310,14 @@ def internal_server_error(error):
         "error": 500,
         "message": 'Internal Server Error'
     }), 500
+
+@APP.errorhandler(AuthError)
+def auth_error(error):
+    return jsonify({
+        "success": False,
+        "error": error.status_code,
+        "message": error.error['description']
+    }), error.status_code
 
 if __name__ == '__main__':
     APP.run(host='0.0.0.0', port=8080, debug=True)
