@@ -23,10 +23,15 @@ def hello():
 
 def check_customer_exist(payload) -> Optional[Customer]:
     subject = payload['sub']
+    print(subject)
     customer = Customer.query.filter_by(subject=subject).one_or_none()
     if customer:
         return customer
     return None
+    
+# ------------------ Customer ------------------
+
+# ---------------- endpoint for "customers" resource
 
 @APP.route('/check-customer', methods=['GET'])
 @requires_auth('check:customers')
@@ -35,8 +40,30 @@ def check_customer(payload):
     if customer:
         return jsonify({'customer': customer.format()})
     return jsonify({'message': 'Customer not found, please create a customer account'}), 404
-    
-# ------------------ Customer ------------------
+
+@APP.route('/customers', methods=['POST'])
+@requires_auth('post:customers')
+def create_customer(payload):
+    check_customer = check_customer_exist(payload)
+    if check_customer:
+        return jsonify({'message': 'Customer already exists', 'customer': check_customer.format()}), 409
+    customer = request.get_json()
+    if customer is None:
+        abort(400, description="The request body is empty")
+    first_name = customer.get('first_name', None)
+    last_name = customer.get('last_name', None)
+    address = customer.get('address', None)
+    subject = payload.get('sub', None)
+    if subject is None:
+        abort(400, description="The subject is required in the payload")
+    if first_name is None or last_name is None or address is None:
+        abort(400, description="first_name, last_name and address are required in the request body")
+    try:
+        customer = Customer(**customer, subject=subject)
+        customer.insert()
+        return jsonify({'customer': customer.format()})
+    except:
+        abort(422, description="The customer could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
 #---------- endpoint for "orders" resource
 @APP.route('/orders', methods=['POST'])
@@ -290,27 +317,6 @@ def delete_order(payload, id):
         abort(422, description="The order could not be deleted due to the server is not able to process the request at the moment")
 
 #----- endpoint for "customers" resource
-
-@APP.route('/customers', methods=['POST'])
-@requires_auth('post:customers')
-def create_customer(payload):
-    check_customer = check_customer_exist(payload)
-    if check_customer:
-        return jsonify({'message': 'Customer already exists'}), 409
-    customer = request.get_json()
-    if customer is None:
-        abort(400, description="The request body is empty")
-    first_name = customer.get('first_name', None)
-    last_name = customer.get('last_name', None)
-    address = customer.get('address', None)
-    if first_name is None or last_name is None or address is None:
-        abort(400, description="first_name, last_name and address are required in the request body")
-    try:
-        customer = Customer(**customer)
-        customer.insert()
-        return jsonify({'customer': customer.format()})
-    except:
-        abort(422, description="The customer could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
 # ---------------- Error Handling -------------------
 
