@@ -3,6 +3,7 @@ from flask import request, abort
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
+from typing import List
 
 AUTH0_DOMAIN = 'dev-tioi4bnfisc6bcli.us.auth0.com'
 ALGORITHMS = ['RS256']
@@ -17,14 +18,14 @@ class AuthError(Exception):
         self.error = error
         self.status_code = status_code
 
-def get_token_auth_header():
+def get_token_auth_header() -> str:
     if 'Authorization' not in request.headers:
         raise AuthError({
             'code': 'authorization_header_missing',
             'description': 'Authorization header is expected.'
         }, 401)
-    auth_header = request.headers['Authorization']
-    header_parts = auth_header.split(' ')
+    auth_header: str = request.headers['Authorization']
+    header_parts: List = auth_header.split(' ')
     if len(header_parts) != 2:
         raise AuthError({
             'code': 'invalid_header',
@@ -38,7 +39,7 @@ def get_token_auth_header():
     token = header_parts[1]
     return token
 
-def check_permissions(permission, payload):
+def check_permissions(permission, payload) -> bool:
     if 'permissions' not in payload:
         raise AuthError({
             'code': 'invalid_claims',
@@ -51,7 +52,7 @@ def check_permissions(permission, payload):
         }, 403)
     return True
 
-def verify_decode_jwt(token):
+def verify_decode_jwt(token) -> dict:
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
     try:

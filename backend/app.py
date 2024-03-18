@@ -6,6 +6,7 @@ from models import db, setup_db, Customer, Product, Order, OrderItem, CheckOutOr
 from datetime import datetime
 from sqlalchemy import extract, desc
 from auth import AuthError, requires_auth
+from typing import List, Dict, Optional
 
 def create_app(test_config=None):
   # create and configure the app
@@ -20,7 +21,7 @@ APP.app_context().push()
 def hello():
     return jsonify({'message': 'Hello World!'})
 
-def check_customer_exist(payload):
+def check_customer_exist(payload) -> Optional[Customer]:
     subject = payload['sub']
     customer = Customer.query.filter_by(subject=subject).one_or_none()
     if customer:
@@ -50,7 +51,7 @@ def create_order(payload):
         abort(400, description="customer_id and deliver_date must have value")
     comment = body.get('comment', None)
     comment = '' if comment is None else comment
-    order_items = body.get('order_items', None)
+    order_items: List = body.get('order_items', None)
     for each_order_item in order_items:
         if len(each_order_item.keys()) != 2 or 'product_id' not in each_order_item.keys() or 'quantity' not in each_order_item.keys():
             abort(400, description="product_id and quantity are required in each order_item, and only these two keys are allowed")
@@ -100,7 +101,7 @@ def search_customer_by_firstName_and_lastName(payload):
 def create_product(payload):
     body = request.get_json()
     name = body.get('name', None)
-    unit_price = body.get('unit_price', None)
+    unit_price: int = body.get('unit_price', None)
     description = body.get('description', None)
 
     try:
@@ -118,7 +119,7 @@ def update_product(payload, id):
         abort(404, description="The product with the given id is not found")
     body = request.get_json()
     name = body.get('name', None)
-    unit_price = body.get('unit_price', None)
+    unit_price: int = body.get('unit_price', None)
     description = body.get('description', None)
 
     try:
@@ -149,7 +150,7 @@ def delete_product(payload, id):
 @APP.route('/orders', methods=['GET'])
 @requires_auth('get:orders')
 def get_orders(payload):
-    sort_by = request.args.get('sort_by', None)
+    sort_by: Optional[str] = request.args.get('sort_by', None)
     
     if sort_by is None:
         orders = Order.query.all()
@@ -198,8 +199,8 @@ def get_products(payload):
     else:
         if len(query_params_dict.keys()) > 2 or not all([each_key in ['sort_by', 'ascending'] for each_key in query_params_dict.keys()]):
             abort(400, description="The sort_by and ascending are the only allowed query parameters")
-        sort_by = query_params_dict.get('sort_by', None)
-        ascending = query_params_dict.get('ascending', None)
+        sort_by: Optional[str] = query_params_dict.get('sort_by', None)
+        ascending: Optional[str] = query_params_dict.get('ascending', None)
         if ascending is not None and sort_by is None:
             abort(400, description="The sort_by parameter must be provided if the ascending parameter is provided in the request query string")
         elif sort_by is not None and sort_by in ['unit_price']:
