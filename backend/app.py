@@ -276,5 +276,39 @@ def create_customer():
     except:
         abort(422, description="The customer could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
+# ---------------- Error Handling -------------------
+
+@APP.errorhandler(400)
+def bad_request(error):
+    return jsonify({
+        "success": False,
+        "error": 400,
+        "message": error.description
+    }), 400
+
+@APP.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        "success": False,
+        "error": 404,
+        "message": error.description
+    }), 404
+
+@APP.errorhandler(422)
+def unprocessable_entity(error):
+    return jsonify({
+        "success": False,
+        "error": 422,
+        "message": error.description
+    }), 422
+
+@APP.errorhandler(500)
+def internal_server_error(error):
+    return jsonify({
+        "success": False,
+        "error": 500,
+        "message": 'Internal Server Error'
+    }), 500
+
 if __name__ == '__main__':
     APP.run(host='0.0.0.0', port=8080, debug=True)
