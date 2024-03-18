@@ -20,6 +20,21 @@ APP.app_context().push()
 def hello():
     return jsonify({'message': 'Hello World!'})
 
+def check_customer_exist(payload):
+    subject = payload['sub']
+    customer = Customer.query.filter_by(subject=subject).one_or_none()
+    if customer:
+        return customer
+    return None
+
+@APP.route('/check-customer', methods=['GET'])
+@requires_auth('check:customers')
+def check_customer(payload):
+    customer = check_customer_exist(payload)
+    if customer:
+        return jsonify({'customer': customer.format()})
+    return jsonify({'message': 'Customer not found, please create a customer account'}), 404
+    
 # ------------------ Customer ------------------
 
 #---------- endpoint for "orders" resource
@@ -124,6 +139,45 @@ def delete_product(id):
     except:
         abort(422, description="The product could not be deleted due to the server is not able to process the request at the moment")
 
+# ----------- endpoint for 'orders' resource
+@APP.route('/orders', methods=['GET'])
+def get_orders():
+    sort_by = request.args.get('sort_by', None)
+    
+    if sort_by is None:
+        orders = Order.query.all()
+        # date_time = orders[0].deliver_date
+        # print(date_time)
+        # print(type(date_time))
+        # print(date_time.strftime("%Y-%m-%d %H:%M:%S"))
+        # print(type(date_time.strftime("%Y-%m-%d %H:%M:%S")))
+        # print(date_time.isoformat())
+        # print(type(date_time.isoformat()))
+        # print(orders[0].__repr__())
+        # print(type(orders[0].__dict__))
+    elif sort_by not in ['customer_id', 'deliver_date']:
+        abort(400, description="The sort_by parameter must be 'customer_id' or 'deliver_date' if it is provided in the request query string")
+    else:
+        if sort_by == 'customer_id':
+            orders = Order.query.order_by(Order.customer_id, desc(Order.deliver_date)).all()
+        else:
+            orders = Order.query.order_by(desc(Order.deliver_date)).all()
+    return jsonify({'orders': [order.format() for order in orders]})
+
+@APP.route('/orders-by-date', methods=['GET'])
+def get_orders_by_deliver_date():
+    request_deliver_date = request.args.get('deliver_date', None)
+    if not request_deliver_date:
+        abort(400, description="The deliver_date parameter must be provided in the request query string")
+    # request_deliver_date.strip()
+    request_deliver_date = datetime.strptime(request_deliver_date, "%Y-%m-%d %H:%M:%S")
+    print(request_deliver_date)
+    print(request_deliver_date.month)
+    order_list_on_this_date = Order.query.filter(extract('month', Order.deliver_date) == request_deliver_date.month,
+                                                 extract('year', Order.deliver_date) == request_deliver_date.year,
+                                                 extract('day', Order.deliver_date) == request_deliver_date.day).all()
+    return jsonify({'orders': [order.format() for order in order_list_on_this_date]})
+
 # ------------------Customer and Manager -------------------
 
 #----- endpoint for "products" resource
@@ -164,43 +218,10 @@ def search_by_product_name():
     return jsonify({'products': [product.format() for product in products]})
 
 #----- endpoint for "orders" resource
-@APP.route('/orders', methods=['GET'])
-def get_orders():
-    sort_by = request.args.get('sort_by', None)
-    
-    if sort_by is None:
-        orders = Order.query.all()
-        # date_time = orders[0].deliver_date
-        # print(date_time)
-        # print(type(date_time))
-        # print(date_time.strftime("%Y-%m-%d %H:%M:%S"))
-        # print(type(date_time.strftime("%Y-%m-%d %H:%M:%S")))
-        # print(date_time.isoformat())
-        # print(type(date_time.isoformat()))
-        # print(orders[0].__repr__())
-        # print(type(orders[0].__dict__))
-    elif sort_by not in ['customer_id', 'deliver_date']:
-        abort(400, description="The sort_by parameter must be 'customer_id' or 'deliver_date' if it is provided in the request query string")
-    else:
-        if sort_by == 'customer_id':
-            orders = Order.query.order_by(Order.customer_id, desc(Order.deliver_date)).all()
-        else:
-            orders = Order.query.order_by(desc(Order.deliver_date)).all()
+@APP.route('/customers/<int:id>/orders', methods=['GET'])
+def get_orders_by_customer(id):
+    orders = Order.query.filter(Order.customer_id == id).all()
     return jsonify({'orders': [order.format() for order in orders]})
-
-@APP.route('/orders-by-date', methods=['GET'])
-def get_orders_by_deliver_date():
-    request_deliver_date = request.args.get('deliver_date', None)
-    if not request_deliver_date:
-        abort(400, description="The deliver_date parameter must be provided in the request query string")
-    # request_deliver_date.strip()
-    request_deliver_date = datetime.strptime(request_deliver_date, "%Y-%m-%d %H:%M:%S")
-    print(request_deliver_date)
-    print(request_deliver_date.month)
-    order_list_on_this_date = Order.query.filter(extract('month', Order.deliver_date) == request_deliver_date.month,
-                                                 extract('year', Order.deliver_date) == request_deliver_date.year,
-                                                 extract('day', Order.deliver_date) == request_deliver_date.day).all()
-    return jsonify({'orders': [order.format() for order in order_list_on_this_date]})
 
 @APP.route('/orders/<int:id>', methods=['PATCH'])
 def update_order(id):
@@ -255,13 +276,13 @@ def delete_order(id):
         abort(422, description="The order could not be deleted due to the server is not able to process the request at the moment")
 
 #----- endpoint for "customers" resource
-@APP.route('/customers/<int:id>/orders', methods=['GET'])
-def get_orders_by_customer(id):
-    orders = Order.query.filter(Order.customer_id == id).all()
-    return jsonify({'orders': [order.format() for order in orders]})
 
 @APP.route('/customers', methods=['POST'])
-def create_customer():
+@requires_auth('create:customers')
+def create_customer(payload):
+    check_customer = check_customer_exist(payload)
+    if check_customer:
+        return jsonify({'message': 'Customer already exists'}), 409
     customer = request.get_json()
     if customer is None:
         abort(400, description="The request body is empty")
@@ -302,6 +323,14 @@ def unprocessable_entity(error):
         "error": 422,
         "message": error.description
     }), 422
+
+@APP.errorhandler(409)
+def conflict(error):
+    return jsonify({
+        "success": False,
+        "error": 409,
+        "message": error.description
+    }), 409
 
 @APP.errorhandler(500)
 def internal_server_error(error):
