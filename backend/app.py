@@ -28,22 +28,22 @@ def create_order():
     customer_id = body.get('customer_id', None)
     deliver_date = body.get('deliver_date', None)
     if not 'customer_id' in body or not 'deliver_date' in body or not 'comment' in body or not 'order_items' in body or not 'quantity' in body:
-        abort(400)
+        abort(400, description="customer_id, deliver_date, comment, order_items and quantity are required in the request body")
     if customer_id is None or deliver_date is None:
-        abort(400)
+        abort(400, description="customer_id and deliver_date must have value")
     comment = body.get('comment', None)
     comment = '' if comment is None else comment
     order_items = body.get('order_items', None)
     for each_order_item in order_items:
         if len(each_order_item.keys()) != 2 or 'product_id' not in each_order_item.keys() or 'quantity' not in each_order_item.keys():
-            abort(400)
+            abort(400, description="product_id and quantity are required in each order_item, and only these two keys are allowed")
     check_out_order = CheckOutOrder(**body)
     print(check_out_order.format())
     try:
         check_out_order.insert()
         return jsonify({'order': check_out_order.format()})
     except:
-        abort(422)
+        abort(422, description="The order could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
 # -------------------Manager -------------------
 #----- endpoint for "customers" resource
@@ -57,9 +57,9 @@ def search_customer_by_firstName_and_lastName():
     body = request.get_json()
     for each_key in body.keys():
         if each_key not in ['first_name', 'last_name']:
-            abort(400)
+            abort(400, description="Only first_name and last_name are allowed in the request body")
     if len(body.keys()) > 2:
-        abort(400)
+        abort(400, description="Only first_name and last_name are allowed in the request body")
     first_name = body.get('first_name', None)
     last_name = body.get('last_name', None)
     first_name = first_name.strip() if first_name is not None else None
@@ -88,13 +88,13 @@ def create_product():
         product.insert()
         return jsonify({'product': product.format()})
     except:
-        abort(422)
+        abort(422, description="The product could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
 @APP.route('/products/<int:id>', methods=['PATCH'])
 def update_product(id):
     product = db.session.get(Product, id)
     if product is None:
-        abort(404)
+        abort(404, description="The product with the given id is not found")
     body = request.get_json()
     name = body.get('name', None)
     unit_price = body.get('unit_price', None)
@@ -110,38 +110,52 @@ def update_product(id):
         product.update()
         return jsonify({'product': product.format()})
     except:
-        abort(422)
+        abort(422, description="The product could not be updated due to the request body is not valid or the server is not able to process the request at the moment")
 
 @APP.route('/products/<int:id>', methods=['DELETE'])
 def delete_product(id):
     product = db.session.get(Product, id)
     if product is None:
-        abort(404)
+        abort(404, description="The product with the given id is not found")
     try:
         product.delete()
         return jsonify({'deleted': id})
     except:
-        abort(422)
+        abort(422, description="The product could not be deleted due to the server is not able to process the request at the moment")
 
 # ------------------Customer and Manager -------------------
 
 #----- endpoint for "products" resource
 @APP.route('/products', methods=['GET'])
 def get_products():
-    sort_by = request.args.get('sort_by', None)
-    if sort_by is None:
+    query_params_dict = request.args.to_dict() # convert the ImmutableMultiDict to a dictionary
+    if len(query_params_dict.keys()) == 0:
         products = Product.query.all()
-    elif sort_by not in ['unit_price']:
-        abort(400)
     else:
-        products = Product.query.order_by(Product.unit_price).all()
+        if len(query_params_dict.keys()) > 2 or not all([each_key in ['sort_by', 'ascending'] for each_key in query_params_dict.keys()]):
+            abort(400, description="The sort_by and ascending are the only allowed query parameters")
+        sort_by = query_params_dict.get('sort_by', None)
+        ascending = query_params_dict.get('ascending', None)
+        if ascending is not None and sort_by is None:
+            abort(400, description="The sort_by parameter must be provided if the ascending parameter is provided in the request query string")
+        elif sort_by is not None and sort_by in ['unit_price']:
+            if ascending is None:
+                products = Product.query.order_by(Product.unit_price).all()
+            elif ascending.lower() not in ['true', 'false']:
+                abort(400, description="The sort_by parameter must be 'unit_price' and the ascending parameter must be 'true' or 'false' if they are provided in the request query string")
+            elif ascending.lower() == 'true':
+                products = Product.query.order_by(Product.unit_price).all()
+            else:
+                products = Product.query.order_by(Product.unit_price.desc()).all()
+        else:
+            abort(400, description="The sort_by parameter must be 'unit_price' if it is provided in the request query string")
     return jsonify({'products': [product.format() for product in products]})
 
 @APP.route('/search-products', methods=['POST'])
 def search_by_product_name():
     body = request.get_json()
     if len(body.keys()) != 1 or 'name' not in body.keys():
-        abort(400)
+        abort(400, description="Only 'name' is allowed in the request body")
     name = body.get('name', None)
     products = []
     if name is not None:  
@@ -165,7 +179,7 @@ def get_orders():
         # print(orders[0].__repr__())
         # print(type(orders[0].__dict__))
     elif sort_by not in ['customer_id', 'deliver_date']:
-        abort(400)
+        abort(400, description="The sort_by parameter must be 'customer_id' or 'deliver_date' if it is provided in the request query string")
     else:
         if sort_by == 'customer_id':
             orders = Order.query.order_by(Order.customer_id, desc(Order.deliver_date)).all()
@@ -177,7 +191,7 @@ def get_orders():
 def get_orders_by_deliver_date():
     request_deliver_date = request.args.get('deliver_date', None)
     if not request_deliver_date:
-        abort(400)
+        abort(400, description="The deliver_date parameter must be provided in the request query string")
     # request_deliver_date.strip()
     request_deliver_date = datetime.strptime(request_deliver_date, "%Y-%m-%d %H:%M:%S")
     print(request_deliver_date)
@@ -193,14 +207,14 @@ def update_order(id):
     # print(type(order_dict))
     # print(isinstance(order_dict, Order))
     if order is None:
-        abort(404)
+        abort(404, description="The order with the given id is not found")
     body = request.get_json()
     if 'customer_id' in body:
-        abort(422)
+        abort(422, description="The customer_id cannot be updated")
     if 'deliver_date' in body:
         deliver_date = body.get('deliver_date', None)
-        if deliver_date is None:
-            abort(400)
+        if not isinstance(deliver_date, str) or deliver_date.strip() == '':
+            abort(400, description="The deliver_date must have the string value of a valid date and time format (YYYY-MM-DD HH:MM:SS)")
         print(deliver_date)
         order.deliver_date = deliver_date
     if 'comment' in body:
@@ -208,13 +222,13 @@ def update_order(id):
         order.comment = comment
     if 'order_items' in body:
         order_items = body.get('order_items', None)
-        if order_items is None:
-            abort(400)
+        if not isinstance(order_items, list) and len(order_items) <= 0:
+            abort(400, description="The order_items must be a list of order_item objects and it cannot be empty")
         print(order_items)
         list_of_order_items_objects = []
         for each_order_item in order_items:
             if len(each_order_item.keys()) != 2 or 'product_id' not in each_order_item.keys() or 'quantity' not in each_order_item.keys():
-                abort(400)
+                abort(400, description="product_id and quantity are required in each order_item, and only these two keys are allowed")
             print(isinstance(each_order_item, dict))
             each_order_item_object = OrderItem(**each_order_item, order_id=id)
             print(each_order_item_object.format())
@@ -226,18 +240,18 @@ def update_order(id):
         order.update()
         return jsonify({'order': order.format()})
     except:
-        abort(422)
+        abort(422, description="The order could not be updated due to the request body is not valid or the server is not able to process the request at the moment")
 
 @APP.route('/orders/<int:id>', methods=['DELETE'])
 def delete_order(id):
     order = Order.query.filter(Order.id == id).one_or_none()
     if order is None:
-        abort(404)
+        abort(404, description="The order with the given id is not found")
     try:
         order.delete()
         return jsonify({'deleted': id})
     except:
-        abort(422)
+        abort(422, description="The order could not be deleted due to the server is not able to process the request at the moment")
 
 #----- endpoint for "customers" resource
 @APP.route('/customers/<int:id>/orders', methods=['GET'])
@@ -249,18 +263,18 @@ def get_orders_by_customer(id):
 def create_customer():
     customer = request.get_json()
     if customer is None:
-        abort(400)
+        abort(400, description="The request body is empty")
     first_name = customer.get('first_name', None)
     last_name = customer.get('last_name', None)
     address = customer.get('address', None)
     if first_name is None or last_name is None or address is None:
-        abort(400)
+        abort(400, description="first_name, last_name and address are required in the request body")
     try:
         customer = Customer(**customer)
         customer.insert()
         return jsonify({'customer': customer.format()})
     except:
-        abort(422)
+        abort(422, description="The customer could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
 if __name__ == '__main__':
     APP.run(host='0.0.0.0', port=8080, debug=True)
