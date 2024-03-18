@@ -36,6 +36,7 @@ def setup_db(app, database_path=database_path):
 class Customer(db.Model):
     __tablename__ = 'Customer'
     id = db.Column(db.Integer, primary_key=True)
+    subject = db.Column(db.String, nullable=False, unique=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     address = db.Column(db.String, nullable=False)
