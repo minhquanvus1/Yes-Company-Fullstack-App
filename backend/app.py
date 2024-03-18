@@ -39,7 +39,8 @@ def check_customer(payload):
 
 #---------- endpoint for "orders" resource
 @APP.route('/orders', methods=['POST'])
-def create_order():
+@requires_auth('post:orders')
+def create_order(payload):
     body = request.get_json()
     customer_id = body.get('customer_id', None)
     deliver_date = body.get('deliver_date', None)
@@ -64,12 +65,14 @@ def create_order():
 # -------------------Manager -------------------
 #----- endpoint for "customers" resource
 @APP.route('/customers', methods=['GET'])
-def get_customers():
+@requires_auth('get:customers')
+def get_customers(payload):
     customers = Customer.query.all()
     return jsonify({'customers': [customer.format() for customer in customers]})
 
 @APP.route('/search-customers', methods=['POST'])
-def search_customer_by_firstName_and_lastName():
+@requires_auth('search:customers')
+def search_customer_by_firstName_and_lastName(payload):
     body = request.get_json()
     for each_key in body.keys():
         if each_key not in ['first_name', 'last_name']:
@@ -93,7 +96,8 @@ def search_customer_by_firstName_and_lastName():
 
 #---------- endpoint for "products" resource
 @APP.route('/products', methods=['POST'])
-def create_product():
+@requires_auth('post:products')
+def create_product(payload):
     body = request.get_json()
     name = body.get('name', None)
     unit_price = body.get('unit_price', None)
@@ -107,7 +111,8 @@ def create_product():
         abort(422, description="The product could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
 @APP.route('/products/<int:id>', methods=['PATCH'])
-def update_product(id):
+@requires_auth('patch:products')
+def update_product(payload, id):
     product = db.session.get(Product, id)
     if product is None:
         abort(404, description="The product with the given id is not found")
@@ -129,7 +134,8 @@ def update_product(id):
         abort(422, description="The product could not be updated due to the request body is not valid or the server is not able to process the request at the moment")
 
 @APP.route('/products/<int:id>', methods=['DELETE'])
-def delete_product(id):
+@requires_auth('delete:products')
+def delete_product(payload, id):
     product = db.session.get(Product, id)
     if product is None:
         abort(404, description="The product with the given id is not found")
@@ -141,7 +147,8 @@ def delete_product(id):
 
 # ----------- endpoint for 'orders' resource
 @APP.route('/orders', methods=['GET'])
-def get_orders():
+@requires_auth('get:orders')
+def get_orders(payload):
     sort_by = request.args.get('sort_by', None)
     
     if sort_by is None:
@@ -165,7 +172,8 @@ def get_orders():
     return jsonify({'orders': [order.format() for order in orders]})
 
 @APP.route('/orders-by-date', methods=['GET'])
-def get_orders_by_deliver_date():
+@requires_auth('get:orders-by-date')
+def get_orders_by_deliver_date(payload):
     request_deliver_date = request.args.get('deliver_date', None)
     if not request_deliver_date:
         abort(400, description="The deliver_date parameter must be provided in the request query string")
@@ -182,7 +190,8 @@ def get_orders_by_deliver_date():
 
 #----- endpoint for "products" resource
 @APP.route('/products', methods=['GET'])
-def get_products():
+@requires_auth('get:products')
+def get_products(payload):
     query_params_dict = request.args.to_dict() # convert the ImmutableMultiDict to a dictionary
     if len(query_params_dict.keys()) == 0:
         products = Product.query.all()
@@ -207,7 +216,8 @@ def get_products():
     return jsonify({'products': [product.format() for product in products]})
 
 @APP.route('/search-products', methods=['POST'])
-def search_by_product_name():
+@requires_auth('search:products')
+def search_by_product_name(payload):
     body = request.get_json()
     if len(body.keys()) != 1 or 'name' not in body.keys():
         abort(400, description="Only 'name' is allowed in the request body")
@@ -219,12 +229,14 @@ def search_by_product_name():
 
 #----- endpoint for "orders" resource
 @APP.route('/customers/<int:id>/orders', methods=['GET'])
-def get_orders_by_customer(id):
+@requires_auth('get:ordersByCustomerId')
+def get_orders_by_customer(payload, id):
     orders = Order.query.filter(Order.customer_id == id).all()
     return jsonify({'orders': [order.format() for order in orders]})
 
 @APP.route('/orders/<int:id>', methods=['PATCH'])
-def update_order(id):
+@requires_auth('patch:orders')
+def update_order(payload, id):
     order = Order.query.filter(Order.id == id).one_or_none()
     # print(type(order_dict))
     # print(isinstance(order_dict, Order))
@@ -265,7 +277,8 @@ def update_order(id):
         abort(422, description="The order could not be updated due to the request body is not valid or the server is not able to process the request at the moment")
 
 @APP.route('/orders/<int:id>', methods=['DELETE'])
-def delete_order(id):
+@requires_auth('delete:orders')
+def delete_order(payload, id):
     order = Order.query.filter(Order.id == id).one_or_none()
     if order is None:
         abort(404, description="The order with the given id is not found")
@@ -278,7 +291,7 @@ def delete_order(id):
 #----- endpoint for "customers" resource
 
 @APP.route('/customers', methods=['POST'])
-@requires_auth('create:customers')
+@requires_auth('post:customers')
 def create_customer(payload):
     check_customer = check_customer_exist(payload)
     if check_customer:
