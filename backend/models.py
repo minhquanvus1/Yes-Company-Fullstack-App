@@ -154,9 +154,9 @@ class CheckOutOrder():
         self.order_items = order_items
     def insert(self):
         new_order = Order(customer_id=self.customer_id, deliver_date=self.deliver_date, comment=self.comment)
-        new_order.insert()
+        # new_order.insert()
         for each_order_item in self.order_items:
-            order_item = OrderItem(order_id=new_order.id, product_id=each_order_item.product.id, quantity=each_order_item.product.quantity)
+            order_item = OrderItem(order_id=new_order.id, product_id=each_order_item['product_id'], quantity=each_order_item['quantity'])
             order_item.order = new_order
             order_item.insert()
         return new_order.format()
@@ -164,3 +164,12 @@ class CheckOutOrder():
         return {'customer_id': self.customer_id, 'deliver_date': self.deliver_date, 'comment': self.comment, 'order_items': self.order_items}
     def __repr__(self):
         return json.dumps(self.format())
+
+# class CheckOutOrderItem():
+#     def __init__(self, product_id, quantity):
+#         self.product_id = product_id
+#         self.quantity = quantity
+#     def format(self):
+#         return {'product_id': self.product_id, 'quantity': self.quantity}
+#     def __repr__(self):
+#         return json.dumps(self.format())
