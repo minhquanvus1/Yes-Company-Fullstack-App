@@ -48,31 +48,21 @@ class YesCompanyTest(unittest.TestCase):
         }
         self.client = self.app.test_client
         with self.app.app_context():
-            db.drop_all()
+            # db.drop_all()
             db.create_all()
             db.session.add(Customer(**self.customer))
             db.session.add(Product(**self.product))
+            db.session.add(Order(**self.order))
+            db.session.add(OrderItem(**self.order_item))
             db.session.commit()
     def tearDown(self):
         """Executed after reach test"""
-        # with self.app.app_context():
-        #     db.session.rollback()
-        #     db.session.remove()
-        #     db.drop_all()
-    # def tearDown(self):
-    #     """Executed after reach test"""
-    #     # pass
-    #     with self.app.app_context():
-    #         # self.db.session.remove()
-    #         # self.db.drop_all()
-    #         # self.db.create_all()
-    #         # self.db.session.commit()
-    #         # Remove the session (commit any remaining changes first)
-    #         self.db.session.rollback()
-    #         self.db.session.remove()
-    #         # Drop all tables
-    #         self.db.drop_all()
-            
+        print('teardown')
+        with self.app.app_context():
+            print('inside teardown')
+            # db.session.rollback()
+            # db.drop_all()
+
             
     def test_get_hello(self):
         res = self.client().get('/hello')
