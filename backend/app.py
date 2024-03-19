@@ -15,31 +15,20 @@ def create_app(test_config=None):
   # create and configure the app
     APP = Flask(__name__)
     APP.config.from_mapping(production_config)
-    # APP.config.from_mapping(
-    #     SQLALCHEMY_DATABASE_URI = "postgresql://postgres:Sunghajung1@localhost:5432/YES-Company",
-    #     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    # )
     CORS(APP)
     if test_config is not None:
         APP.config.from_mapping(test_config)
-        db.APP = APP
+    db.APP = APP
     db.init_app(APP)
     with APP.app_context():
         migrate = Migrate(APP, db)
         #   db.drop_all()
         #   db.create_all()  
     APP.app_context().push()
+    
     @APP.route('/hello', methods=['GET'])
     def hello():
         return jsonify({'message': 'Hello World!'})
-    # @APP.route('/customers', methods=['GET'])
-    # def get_customers():
-    #     customers = Customer.query.all()
-    #     return jsonify({'customers': [customer.format() for customer in customers]})
-    # @APP.route('/products', methods=['GET'])
-    # def get_products():
-    #     products = Product.query.all()
-    #     return jsonify({'products': [product.format() for product in products]})
 
     def check_customer_exist(payload) -> Optional[Customer]:
         subject = payload['sub']
