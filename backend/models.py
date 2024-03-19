@@ -92,7 +92,7 @@ class OrderItem(db.Model):
 class Product(db.Model):
     __tablename__ = 'Product'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False, unique=True)
     unit_price = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String, nullable=False)
     order_items = db.relationship('OrderItem', backref=db.backref('product', lazy=True), lazy='joined', cascade='all, delete')
