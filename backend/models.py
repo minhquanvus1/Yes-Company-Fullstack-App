@@ -1,37 +1,44 @@
-import os
 import json
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
 from sqlalchemy.ext.associationproxy import association_proxy
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 from datetime import datetime
-from dotenv import load_dotenv
+# db = SQLAlchemy()
 
-load_dotenv()
+# DB_USERNAME = os.getenv('DB_USERNAME')
+# DB_PASSWORD = os.getenv('DB_PASSWORD')
+# DB_HOST = os.getenv('DB_HOST')
+# DB_PORT = os.getenv('DB_PORT')
+# DB_NAME = os.getenv('DB_NAME')
+
+# TEST_DB_USERNAME = os.getenv('TEST_DB_USERNAME')
+# TEST_DB_PASSWORD = os.getenv('TEST_DB_PASSWORD')
+# TEST_DB_HOST = os.getenv('TEST_DB_HOST')
+# TEST_DB_PORT = os.getenv('TEST_DB_PORT')
+# TEST_DB_NAME = os.getenv('TEST_DB_NAME')
+
+# if not os.getenv('DATABASE_URL'):
+#     database_path = 'postgresql://{}:{}@{}:{}/{}'.format(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
+# else:
+#     database_path = os.getenv('DATABASE_URL')
+#     if database_path.startswith("postgres://"):
+#         database_path = database_path.replace("postgres://", "postgresql://", 1)
 db = SQLAlchemy()
 
-DB_USERNAME = os.getenv('DB_USERNAME')
-DB_PASSWORD = os.getenv('DB_PASSWORD')
-DB_HOST = os.getenv('DB_HOST')
-DB_PORT = os.getenv('DB_PORT')
-DB_NAME = os.getenv('DB_NAME')
-
-if not os.getenv('DATABASE_URL'):
-    database_path = 'postgresql://{}:{}@{}:{}/{}'.format(DB_USERNAME, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
-else:
-    database_path = os.getenv('DATABASE_URL')
-    if database_path.startswith("postgres://"):
-        database_path = database_path.replace("postgres://", "postgresql://", 1)
-
-def setup_db(app, database_path=database_path):
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_path
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    db.app = app
-    db.init_app(app)
-    migrate = Migrate(app, db)
-    # with app.app_context():
-    #     # db.drop_all()
-    #     db.create_all()
+# def setup_db(app, database_path=database_path):
+#     # if test != True:
+#     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
+#     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+# # else:
+#     # database_path = f'postgresql://{TEST_DB_USERNAME}:{TEST_DB_PASSWORD}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}'
+#     # app.config["SQLALCHEMY_DATABASE_URI"] = database_path
+#     # app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+#     db.app = app
+#     db.init_app(app)
+#     # migrate = Migrate(app, db)
+#     # with app.app_context():
+#     #     # db.drop_all()
+#     #     db.create_all()
 
 class Customer(db.Model):
     __tablename__ = 'Customer'
