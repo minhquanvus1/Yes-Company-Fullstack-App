@@ -19,12 +19,14 @@ class AuthError(Exception):
         self.status_code = status_code
 
 def get_token_auth_header() -> str:
+    print('from auth.py')
     if 'Authorization' not in request.headers:
         raise AuthError({
             'code': 'authorization_header_missing',
             'description': 'Authorization header is expected.'
         }, 401)
     auth_header: str = request.headers['Authorization']
+    print(f'auth_header: {auth_header}')
     header_parts: List = auth_header.split(' ')
     if len(header_parts) != 2:
         raise AuthError({
@@ -53,10 +55,12 @@ def check_permissions(permission, payload) -> bool:
     return True
 
 def verify_decode_jwt(token) -> dict:
+    print('inside verify_decode_jwt')
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())
     try:
         unverified_header = jwt.get_unverified_header(token)
+        print(f'unverified_header: {unverified_header}')
     except jwt.JWTError:
         raise AuthError({
             'code': 'invalid_header',
@@ -112,6 +116,7 @@ def requires_auth(permission=''):
         @wraps(f)
         def wrapper(*args, **kwargs):
             try:
+                print('inside requires_auth_decorator')
                 token = get_token_auth_header()
                 payload = verify_decode_jwt(token)
                 check_permissions(permission, payload)
