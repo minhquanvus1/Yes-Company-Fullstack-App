@@ -70,7 +70,7 @@ def create_app(test_config=None):
         try:
             customer = Customer(**customer, subject=subject)
             customer.insert()
-            return jsonify({'customer': customer.format()})
+            return jsonify({'customer': customer.format()}), 201
         except:
             abort(422, description="The customer could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
@@ -105,30 +105,33 @@ def create_app(test_config=None):
     @requires_auth('get:customers')
     def get_customers(payload):
         customers = Customer.query.all()
+        print(customers)
         return jsonify({'customers': [customer.format() for customer in customers]})
 
     @APP.route('/search-customers', methods=['POST'])
     @requires_auth('search:customers')
     def search_customer_by_firstName_and_lastName(payload):
+        print('hello world')
         body = request.get_json()
         for each_key in body.keys():
             if each_key not in ['first_name', 'last_name']:
                 abort(400, description="Only first_name and last_name are allowed in the request body")
         if len(body.keys()) > 2:
             abort(400, description="Only first_name and last_name are allowed in the request body")
-        first_name = body.get('first_name', None)
-        last_name = body.get('last_name', None)
-        first_name = first_name.strip() if first_name is not None else None
-        last_name = last_name.strip() if last_name is not None else None
-        # if first_name is None and last_name is None:
-        #     abort(400)
+        first_name = body['first_name'].strip()
+        last_name = body['last_name'].strip()
         customers = []
-        if first_name is not None and last_name is not None:
+        print(first_name)
+        print(last_name)
+        if first_name != '' and last_name != '':
             customers = Customer.query.filter(Customer.first_name.ilike(f'%{first_name}%'), Customer.last_name.ilike(f'%{last_name}%')).all()
-        elif first_name is not None:
+        elif first_name != '':
             customers = Customer.query.filter(Customer.first_name.ilike(f'%{first_name}%')).all()
         else:
-            customers = Customer.query.filter(Customer.last_name.ilike(f'%{last_name}%')).all()    
+            customers = Customer.query.filter(Customer.last_name.ilike(f'%{last_name}%')).all()
+        print(customers)
+        if len(customers) == 0:
+            return jsonify({'message': 'No customer found with the given first_name and last_name'}), 404   
         return jsonify({'customers': [customer.format() for customer in customers]})
 
     #---------- endpoint for "products" resource
@@ -136,14 +139,20 @@ def create_app(test_config=None):
     @requires_auth('post:products')
     def create_product(payload):
         body = request.get_json()
+        if body is None:
+            abort(400, description="The request body is empty")
         name = body.get('name', None)
         unit_price: int = body.get('unit_price', None)
         description = body.get('description', None)
-
+        if name is None or unit_price is None or description is None:
+            abort(400, description="name, unit_price and description are required in the request body")
+        existing_product_list = Product.query.filter(Product.name == name).all()
+        if len(existing_product_list) > 0:
+            abort(409, description="The product with the given name already exists")
         try:
             product = Product(name=name, unit_price=unit_price, description=description)
             product.insert()
-            return jsonify({'product': product.format()})
+            return jsonify({'product': product.format()}), 201
         except:
             abort(422, description="The product could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
@@ -154,19 +163,28 @@ def create_app(test_config=None):
         if product is None:
             abort(404, description="The product with the given id is not found")
         body = request.get_json()
+        if body is None:
+            abort(400, description="The request body is empty")
+        if not all(each_key in ['name', 'unit_price', 'description'] for each_key in body):
+            abort(400, description="name or unit_price or description are required in the request body")
         name = body.get('name', None)
         unit_price: int = body.get('unit_price', None)
         description = body.get('description', None)
-
+        if name is not None:
+            name = name.strip()
+            list_of_existing_products_apart_from_the_current_one = Product.query.filter(Product.id != id).all()
+            for each_product in list_of_existing_products_apart_from_the_current_one:
+                if each_product.name == name:
+                    abort(409, description="The product with the given name already exists")
+        if unit_price is not None:
+            if not isinstance(unit_price, int):
+                abort(400, description="The unit_price must be an integer")
         try:
-            if name is not None:
-                product.name = name
-            if unit_price is not None:
-                product.unit_price = unit_price
-            if description is not None:
-                product.description = description
+            product.name = name if name is not None else product.name
+            product.unit_price = unit_price if unit_price is not None else product.unit_price
+            product.description = description.strip() if description is not None else product.description
             product.update()
-            return jsonify({'product': product.format()})
+            return jsonify({'product': product.format()}), 200
         except:
             abort(422, description="The product could not be updated due to the request body is not valid or the server is not able to process the request at the moment")
 
@@ -178,7 +196,7 @@ def create_app(test_config=None):
             abort(404, description="The product with the given id is not found")
         try:
             product.delete()
-            return jsonify({'deleted': id})
+            return jsonify({'deleted': id}), 200
         except:
             abort(422, description="The product could not be deleted due to the server is not able to process the request at the moment")
 
@@ -214,13 +232,18 @@ def create_app(test_config=None):
         request_deliver_date = request.args.get('deliver_date', None)
         if not request_deliver_date:
             abort(400, description="The deliver_date parameter must be provided in the request query string")
-        # request_deliver_date.strip()
-        request_deliver_date = datetime.strptime(request_deliver_date, "%Y-%m-%d %H:%M:%S")
+        try:
+            request_deliver_date = datetime.strptime(request_deliver_date, "%Y-%m-%d %H:%M:%S")
+        except:
+            abort(400, description="The deliver_date must have the string value of a valid date and time format (YYYY-MM-DD HH:MM:SS)")
         print(request_deliver_date)
         print(request_deliver_date.month)
-        order_list_on_this_date = Order.query.filter(extract('month', Order.deliver_date) == request_deliver_date.month,
-                                                     extract('year', Order.deliver_date) == request_deliver_date.year,
-                                                     extract('day', Order.deliver_date) == request_deliver_date.day).all()
+        try:
+            order_list_on_this_date = Order.query.filter(extract('month', Order.deliver_date) == request_deliver_date.month,
+                                                        extract('year', Order.deliver_date) == request_deliver_date.year,
+                                                        extract('day', Order.deliver_date) == request_deliver_date.day).all()
+        except:
+            abort(422, description="The server is not able to process the request at the moment")
         return jsonify({'orders': [order.format() for order in order_list_on_this_date]})
 
     # ------------------Customer and Manager -------------------
@@ -258,10 +281,16 @@ def create_app(test_config=None):
         body = request.get_json()
         if len(body.keys()) != 1 or 'name' not in body.keys():
             abort(400, description="Only 'name' is allowed in the request body")
-        name = body.get('name', None)
+        name = body.get('name', '').strip()
+        print(name)
         products = []
-        if name is not None:  
+        if name != '':
             products = Product.query.filter(Product.name.ilike(f'%{name}%')).all()
+            if len(products) == 0:
+                abort(404, description="No product found with the given name")
+        else:
+            products = Product.query.all()
+        print(products)
         return jsonify({'products': [product.format() for product in products]})
 
     #----- endpoint for "orders" resource
@@ -269,6 +298,8 @@ def create_app(test_config=None):
     @requires_auth('get:ordersByCustomerId')
     def get_orders_by_customer(payload, id):
         orders = Order.query.filter(Order.customer_id == id).all()
+        if len(orders) == 0:
+            abort(404, description="This Customer with this id has no order yet")
         return jsonify({'orders': [order.format() for order in orders]})
 
     @APP.route('/orders/<int:id>', methods=['PATCH'])
@@ -283,16 +314,22 @@ def create_app(test_config=None):
         if 'customer_id' in body:
             abort(422, description="The customer_id cannot be updated")
         if 'deliver_date' in body:
-            deliver_date = body.get('deliver_date', None)
+            deliver_date = body.get('deliver_date', '')
             if not isinstance(deliver_date, str) or deliver_date.strip() == '':
                 abort(400, description="The deliver_date must have the string value of a valid date and time format (YYYY-MM-DD HH:MM:SS)")
+            try:
+                deliver_date = datetime.strptime(deliver_date, "%Y-%m-%d %H:%M:%S")
+            except:
+                abort(400, description="The deliver_date must have the string value of a valid date and time format (YYYY-MM-DD HH:MM:SS)")
+            if deliver_date < datetime.now():
+                abort(422, description="The deliver_date must be a future date and time")
             print(deliver_date)
             order.deliver_date = deliver_date
         if 'comment' in body:
-            comment = body.get('comment', None)
+            comment = body.get('comment', '')
             order.comment = comment
         if 'order_items' in body:
-            order_items = body.get('order_items', None)
+            order_items = body.get('order_items')
             if not isinstance(order_items, list) and len(order_items) <= 0:
                 abort(400, description="The order_items must be a list of order_item objects and it cannot be empty")
             print(order_items)
@@ -321,7 +358,7 @@ def create_app(test_config=None):
             abort(404, description="The order with the given id is not found")
         try:
             order.delete()
-            return jsonify({'deleted': id})
+            return jsonify({'deleted': id}), 200
         except:
             abort(422, description="The order could not be deleted due to the server is not able to process the request at the moment")
 
