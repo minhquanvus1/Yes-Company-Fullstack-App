@@ -11,17 +11,17 @@ console.log(domain);
 console.log(clientId);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* <BrowserRouter> */}
-    <Auth0Provider
-      domain={domain}
-      clientId={clientId}
-      authorizationParams={{
-        redirect_uri: window.location.origin,
-        audience: "https://yesCompany/api",
-      }}
-    >
-      <App />
-    </Auth0Provider>
-    {/* </BrowserRouter> */}
+    <BrowserRouter>
+      <Auth0Provider
+        domain={domain}
+        clientId={clientId}
+        authorizationParams={{
+          redirect_uri: window.location.origin + "/landingPage",
+          audience: "https://yesCompany/api",
+        }}
+      >
+        <App />
+      </Auth0Provider>
+    </BrowserRouter>
   </React.StrictMode>
 );
