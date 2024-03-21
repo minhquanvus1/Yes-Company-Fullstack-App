@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./App.css";
+import LoginButton from "./components/LoginButton";
+import LogoutButton from "./components/LogoutButton";
+import { useAuth0 } from "@auth0/auth0-react";
+import LandingPage from "./components/LandingPage";
+import CreateCustomerForm from "./components/CreateCustomerForm";
+import CreateProductForm from "./components/CreateProductForm";
 function App() {
-  const [count, setCount] = useState(0)
+  const { isLoading, error } = useAuth0();
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      {error && <p>Authentication Error</p>}
+      {!error && isLoading && <p>Loading...</p>}
+      {!error && !isLoading && (
+        <>
+          <LoginButton />
+          <LandingPage />
+          <LogoutButton />
+        </>
+      )}
+      {/* <Router>
+        <Routes>
+          <Route exact path="/" component={LandingPage} />
+          <Route exact path="/createCustomer" component={CreateCustomerForm} />
+          <Route exact path="/createProduct" component={CreateProductForm} />
+        </Routes>
+      </Router> */}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
+
+// import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+// import { useAuth0 } from '@auth0/auth0-react';
+// import LoginButton from './components/LoginButton';
+// import LogoutButton from './components/LogoutButton';
+// import LandingPage from './components/LandingPage';
+// // import ProtectedRoute from './components/ProtectedRoute';
+
+// function App() {
+//   const { isLoading, error } = useAuth0();
+
+//   if (error) {
+//     return <p>Authentication Error</p>;
+//   }
+
+//   if (isLoading) {
+//     return <p>Loading...</p>;
+//   }
+
+//   return (
+//     <Router>
+//       <Switch>
+//         <Route path="/login" component={LoginButton} />
+//         {/* <ProtectedRoute path="/landingPage" component={LandingPage} /> */}
+//         <Route path="/logout" component={LogoutButton} />
+//       </Switch>
+//     </Router>
+//   );
+// }
+
+// export default App;
