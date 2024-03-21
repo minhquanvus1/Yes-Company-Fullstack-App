@@ -45,19 +45,19 @@ const CustomerTable = () => {
       )}
       <h1>Customer List</h1>
       {token && customers.length > 0 ? (
-        <table>
+        <table className="table table-hover">
           <thead>
             <tr>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Address</th>
+              <th scope="col">First Name</th>
+              <th scope="col">Last Name</th>
+              <th scope="col">Address</th>
             </tr>
           </thead>
           <tbody>
             {isLoading && <SpinnerLoading></SpinnerLoading>}
             {customers.map((customer) => {
               return (
-                <tr key={customer.id}>
+                <tr scope="row" key={customer.id}>
                   <td>{customer.first_name}</td>
                   <td>{customer.last_name}</td>
                   <td>{customer.address}</td>
