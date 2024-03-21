@@ -131,7 +131,7 @@ def create_app(test_config=None):
             customers = Customer.query.filter(Customer.last_name.ilike(f'%{last_name}%')).all()
         print(customers)
         if len(customers) == 0:
-            return jsonify({'message': 'No customer found with the given first_name and last_name'}), 404   
+            return jsonify({'customers': [], 'message': 'No customer found with the given first_name and last_name'}), 404   
         return jsonify({'customers': [customer.format() for customer in customers]})
 
     #---------- endpoint for "products" resource

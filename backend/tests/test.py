@@ -397,6 +397,7 @@ class YesCompanyTest(unittest.TestCase):
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
         self.assertEqual(data['message'], 'No customer found with the given first_name and last_name')
+        self.assertEqual(data['customers'], [])
         print('end test')
 #------------------ Test for PATCH /products/<int:id> --------------------
 
