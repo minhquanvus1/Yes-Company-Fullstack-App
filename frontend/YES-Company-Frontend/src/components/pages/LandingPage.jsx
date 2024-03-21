@@ -7,6 +7,7 @@ import ManagerView from "./views/ManagerView";
 import LogoutButton from "../LogoutButton";
 import ProductList from "../ProductList";
 import SpinnerLoading from "../utils/SpinnerLoading";
+import SearchProduct from "../SearchProduct";
 
 const LandingPage = () => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
@@ -43,6 +44,7 @@ const LandingPage = () => {
   }, [token]);
   return (
     <div>
+      <SearchProduct></SearchProduct>
       {isAuthenticated && (!token || !role) && (
         <SpinnerLoading></SpinnerLoading>
       )}
