@@ -287,7 +287,10 @@ def create_app(test_config=None):
         if name != '':
             products = Product.query.filter(Product.name.ilike(f'%{name}%')).all()
             if len(products) == 0:
-                abort(404, description="No product found with the given name")
+                return jsonify({
+                    'products': [],
+                    'message': 'No product found with the given name'
+                }), 404
         else:
             products = Product.query.all()
         print(products)

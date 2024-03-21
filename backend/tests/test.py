@@ -360,9 +360,9 @@ class YesCompanyTest(unittest.TestCase):
         res = self.client().post('/search-products', json={'name': 'iPhone 14'}, headers={'Authorization': self.manager_token})
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 404)
-        self.assertFalse(data['success'])
+        self.assertTrue(data['products'])
+        self.assertEqual(data['products'], [])
         self.assertEqual(data['message'], 'No product found with the given name')
-        self.assertTrue(data['error'] == 404)
 
 #-------------------- Test for POST /search-customers --------------------
 
