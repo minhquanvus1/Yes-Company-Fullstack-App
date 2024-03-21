@@ -1,18 +1,27 @@
 import { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import LoginButton from "./components/LoginButton";
 import LogoutButton from "./components/LogoutButton";
 import { useAuth0 } from "@auth0/auth0-react";
-import LandingPage from "./components/LandingPage";
+// import LandingPage from "./components/LandingPage";
 import CreateCustomerForm from "./components/CreateCustomerForm";
 import CreateProductForm from "./components/CreateProductForm";
+import IntroPage from "./components/pages/IntroPage";
+import LandingPage from "./components/pages/LandingPage";
 function App() {
   const { isLoading, error } = useAuth0();
 
   return (
     <>
-      {error && <p>Authentication Error</p>}
+      <Routes>
+        <Route path="/" element={<IntroPage></IntroPage>}></Route>
+        <Route
+          path="/landingPage"
+          element={<LandingPage></LandingPage>}
+        ></Route>
+      </Routes>
+      {/* {error && <p>Authentication Error</p>}
       {!error && isLoading && <p>Loading...</p>}
       {!error && !isLoading && (
         <>
@@ -20,7 +29,7 @@ function App() {
           <LandingPage />
           <LogoutButton />
         </>
-      )}
+      )} */}
       {/* <Router>
         <Routes>
           <Route exact path="/" component={LandingPage} />
