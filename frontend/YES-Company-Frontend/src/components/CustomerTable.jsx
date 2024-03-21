@@ -25,7 +25,10 @@ const CustomerTable = () => {
         console.log(error.error);
       }
     };
-  }, []);
+    if (token) {
+      getCustomers();
+    }
+  }, [token]);
   return (
     <div>
       <h1>Customer List</h1>
