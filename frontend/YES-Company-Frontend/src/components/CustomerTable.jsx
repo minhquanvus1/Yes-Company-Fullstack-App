@@ -1,13 +1,16 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import SpinnerLoading from "./utils/SpinnerLoading";
 
 const CustomerTable = () => {
   const [customers, setCustomers] = useState([]);
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getCustomers = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch("http://localhost:8080/customers", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -17,12 +20,14 @@ const CustomerTable = () => {
           throw new Error("Network response was not ok");
         }
         const customersResponse = await response.json();
+        setIsLoading(false);
         const customers = customersResponse.customers;
         setCustomers(customers);
         console.log("customers list: ", customers);
       } catch (error) {
         console.log("error");
         console.log(error.error);
+        setIsLoading(false);
       }
     };
     if (token) {
@@ -31,6 +36,7 @@ const CustomerTable = () => {
   }, [token]);
   return (
     <div>
+      {isLoading && <SpinnerLoading></SpinnerLoading>}
       <h1>Customer List</h1>
       <table>
         <thead>
