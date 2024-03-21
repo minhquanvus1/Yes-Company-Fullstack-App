@@ -9,6 +9,7 @@ import CreateCustomerForm from "./components/CreateCustomerForm";
 import CreateProductForm from "./components/CreateProductForm";
 import IntroPage from "./components/pages/IntroPage";
 import LandingPage from "./components/pages/LandingPage";
+import CustomerTable from "./components/CustomerTable";
 function App() {
   const { isLoading, error } = useAuth0();
 
@@ -20,6 +21,7 @@ function App() {
           path="/landingPage"
           element={<LandingPage></LandingPage>}
         ></Route>
+        <Route path="/customers" element={<CustomerTable />}></Route>
       </Routes>
       {/* {error && <p>Authentication Error</p>}
       {!error && isLoading && <p>Loading...</p>}
