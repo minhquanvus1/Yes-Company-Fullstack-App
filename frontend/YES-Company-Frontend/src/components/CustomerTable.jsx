@@ -1,7 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import SpinnerLoading from "./utils/SpinnerLoading";
-
+import SearchCustomer from "./SearchCustomer";
+import { Link } from "react-router-dom";
 const CustomerTable = () => {
   const [customers, setCustomers] = useState([]);
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -36,28 +37,39 @@ const CustomerTable = () => {
   }, [token]);
   return (
     <div>
-      {isLoading && <SpinnerLoading></SpinnerLoading>}
+      {token && (
+        <SearchCustomer
+          token={token}
+          setCustomers={setCustomers}
+        ></SearchCustomer>
+      )}
       <h1>Customer List</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Address</th>
-          </tr>
-        </thead>
-        <tbody>
-          {customers.map((customer) => {
-            return (
-              <tr key={customer.id}>
-                <td>{customer.first_name}</td>
-                <td>{customer.last_name}</td>
-                <td>{customer.address}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      {token && customers.length > 0 ? (
+        <table>
+          <thead>
+            <tr>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Address</th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading && <SpinnerLoading></SpinnerLoading>}
+            {customers.map((customer) => {
+              return (
+                <tr key={customer.id}>
+                  <td>{customer.first_name}</td>
+                  <td>{customer.last_name}</td>
+                  <td>{customer.address}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      ) : (
+        <p>No customers found</p>
+      )}
+      <Link to="/landingPage">Landing Page</Link>
     </div>
   );
 };
