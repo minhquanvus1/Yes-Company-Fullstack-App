@@ -200,6 +200,13 @@ def create_app(test_config=None):
         except:
             abort(422, description="The product could not be deleted due to the server is not able to process the request at the moment")
 
+    @APP.route('/products/<int:id>', methods=['GET'])
+    @requires_auth('get:productById')
+    def get_product_by_id(payload, id):
+        product = db.session.get(Product, id)
+        if product is None:
+            abort(404, description="The product with the given id is not found")
+        return jsonify({'product': product.format()}), 200
     # ----------- endpoint for 'orders' resource
     @APP.route('/orders', methods=['GET'])
     @requires_auth('get:orders')
