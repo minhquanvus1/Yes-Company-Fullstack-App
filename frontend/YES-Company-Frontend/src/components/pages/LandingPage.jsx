@@ -14,6 +14,7 @@ const LandingPage = () => {
   const [token, setAccessToken] = useState("");
   const [role, setRole] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [products, setProducts] = useState([]);
 
   const getToken = async () => {
     try {
@@ -42,9 +43,43 @@ const LandingPage = () => {
       setRole(findRole(token));
     }
   }, [token]);
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      getProducts();
+    }
+  }, [isAuthenticated, token]);
+  console.log("outside return: ", products);
+  console.log("outside return: ", products.length);
+  const getProducts = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch("http://localhost:8080/products", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const responseData = await response.json();
+      setIsLoading(false);
+      setProducts(responseData.products);
+      console.log(responseData);
+      console.log(responseData.products);
+      console.log("inside getProduct: ", products.length);
+    } catch (error) {
+      console.log("error");
+      console.log(error.error);
+      setIsLoading(false);
+    }
+  };
   return (
     <div>
-      <SearchProduct></SearchProduct>
+      {/* {isLoading && <SpinnerLoading></SpinnerLoading>} */}
+      {isAuthenticated && token && (
+        <SearchProduct token={token} setProducts={setProducts}></SearchProduct>
+      )}
+
       {isAuthenticated && (!token || !role) && (
         <SpinnerLoading></SpinnerLoading>
       )}
@@ -55,7 +90,9 @@ const LandingPage = () => {
         <CustomerView token={token}></CustomerView>
       )}
       {/* <CustomerView></CustomerView> */}
-      {isAuthenticated && token && role && <ProductList></ProductList>}
+      {isAuthenticated && token && role && (
+        <ProductList products={products}></ProductList>
+      )}
       <LogoutButton></LogoutButton>
     </div>
   );
