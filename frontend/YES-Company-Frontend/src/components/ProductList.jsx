@@ -4,7 +4,17 @@ import React from "react";
 import CardProduct from "./CardProduct";
 import SpinnerLoading from "./utils/SpinnerLoading";
 
-const ProductList = ({ products, isLoading, role, setProducts }) => {
+const ProductList = ({
+  products,
+  isLoading,
+  role,
+  setProducts,
+  items,
+  setItems,
+  //   quantity,
+  //   setQuantity,
+  isCheckedOut,
+}) => {
   //   const { isAuthenticated } = useAuth0();
   //   const [token, setToken] = useState(localStorage.getItem("token"));
   //   const [isLoading, setIsLoading] = useState(true);
@@ -83,6 +93,11 @@ const ProductList = ({ products, isLoading, role, setProducts }) => {
                   description={product.description}
                   role={role}
                   setProducts={setProducts}
+                  items={items}
+                  setItems={setItems}
+                  //   quantity={quantity}
+                  //   setQuantity={setQuantity}
+                  isCheckedOut={isCheckedOut}
                 />
               </div>
             ))
