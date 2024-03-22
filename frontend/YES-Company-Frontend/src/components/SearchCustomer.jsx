@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 
 const SearchCustomer = ({ token, setCustomers }) => {
@@ -47,6 +47,10 @@ const SearchCustomer = ({ token, setCustomers }) => {
     console.log("first name: ", first_name);
     console.log("last name: ", last_name);
   };
+
+  useEffect(() => {
+    searchForCustomer();
+  }, [first_name, last_name]);
   return (
     <>
       <form
