@@ -19,6 +19,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           redirect_uri: window.location.origin + "/landingPage",
           audience: "https://yesCompany/api",
         }}
+        // useRefreshTokens={true}
+        // cacheLocation="localstorage"
       >
         <App />
       </Auth0Provider>
