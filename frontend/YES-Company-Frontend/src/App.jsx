@@ -27,6 +27,14 @@ function App() {
           path="/products/:id"
           element={<UpdateProduct></UpdateProduct>}
         ></Route>
+        <Route
+          path="/products/create"
+          element={<CreateProductForm></CreateProductForm>}
+        ></Route>
+        <Route
+          path="/customers/create"
+          element={<CreateCustomerForm></CreateCustomerForm>}
+        ></Route>
       </Routes>
       {/* {error && <p>Authentication Error</p>}
       {!error && isLoading && <p>Loading...</p>}
