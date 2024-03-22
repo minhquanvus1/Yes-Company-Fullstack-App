@@ -16,6 +16,10 @@ const LandingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
   const [isAlreadyCustomer, setIsAlreadyCustomer] = useState(false);
+  const [items, setItems] = useState([]);
+  //   const [quantity, setQuantity] = useState(0);
+  const [isCheckedOut, setIsCheckedOut] = useState(false);
+  const [customer, setCustomer] = useState({});
   //   useEffect(() => {
   //     // setAccessToken(localStorage.getItem("token"));
   //     console.log("haha inside");
@@ -82,11 +86,25 @@ const LandingPage = () => {
   }, [isAuthenticated, token]);
 
   useEffect(() => {
-    role === "customer" &&
-      checkCustomer(token, setIsAlreadyCustomer, setIsLoading);
-    console.log("isAlreadyCustomer: ", isAlreadyCustomer);
+    const fetchCustomerData = async () => {
+      if (role === "customer") {
+        try {
+          const customer = await checkCustomer(
+            token,
+            setIsAlreadyCustomer,
+            setIsLoading
+          );
+          setCustomer(customer);
+          console.log("isAlreadyCustomer: ", isAlreadyCustomer);
+        } catch (error) {
+          console.log("error");
+          console.log(error.message);
+        }
+      }
+    };
+    fetchCustomerData();
   }, [isAuthenticated, token, role]);
-
+  console.log("items: ", items);
   return (
     <div>
       {/* <p>hello world</p>
@@ -110,11 +128,15 @@ const LandingPage = () => {
       {isAuthenticated && token && role === "manager" && (
         <ManagerView token={token}></ManagerView>
       )}
-      {isAuthenticated && token && role === "customer" && (
+      {isAuthenticated && token && role === "customer" && customer && (
         <CustomerView
           token={token}
           isAlreadyCustomer={isAlreadyCustomer}
           isLoading={isLoading}
+          items={items}
+          setItems={setItems}
+          customer={customer}
+          setIsCheckedOut={setIsCheckedOut}
         ></CustomerView>
       )}
       {/* <CustomerView></CustomerView> */}
@@ -126,6 +148,11 @@ const LandingPage = () => {
             isLoading={isLoading}
             role={role}
             setProducts={setProducts}
+            items={items}
+            setItems={setItems}
+            // quantity={quantity}
+            // setQuantity={setQuantity}
+            isCheckedOut={isCheckedOut}
           ></ProductList>
         )}
       <LogoutButton></LogoutButton>
