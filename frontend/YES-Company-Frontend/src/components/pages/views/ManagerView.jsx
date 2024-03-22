@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const ManagerView = ({ token }) => {
   const { user, isAuthenticated } = useAuth0();
-
+  //   const isAuthenticated = localStorage.getItem("isAuthenticated");
   return (
     <div>
       <div>
@@ -15,6 +15,9 @@ const ManagerView = ({ token }) => {
         </p>
         <Link to="/customers">
           <button>View Customers</button>
+        </Link>
+        <Link to="/products/create">
+          <button>Create Product</button>
         </Link>
       </div>
     </div>
