@@ -81,7 +81,7 @@ def create_app(test_config=None):
         body = request.get_json()
         customer_id = body.get('customer_id', None)
         deliver_date = body.get('deliver_date', None)
-        if not 'customer_id' in body or not 'deliver_date' in body or not 'comment' in body or not 'order_items' in body or not 'quantity' in body:
+        if not 'customer_id' in body or not 'deliver_date' in body or not 'comment' in body or not 'order_items' in body:
             abort(400, description="customer_id, deliver_date, comment, order_items and quantity are required in the request body")
         if customer_id is None or deliver_date is None:
             abort(400, description="customer_id and deliver_date must have value")
