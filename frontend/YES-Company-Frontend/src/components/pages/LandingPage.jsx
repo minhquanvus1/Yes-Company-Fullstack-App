@@ -8,13 +8,19 @@ import LogoutButton from "../LogoutButton";
 import ProductList from "../ProductList";
 import SpinnerLoading from "../utils/SpinnerLoading";
 import SearchProduct from "../SearchProduct";
-
+import { checkCustomer } from "../functions/checkCustomer";
 const LandingPage = () => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [token, setAccessToken] = useState("");
   const [role, setRole] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [products, setProducts] = useState([]);
+  const [isAlreadyCustomer, setIsAlreadyCustomer] = useState(false);
+  //   useEffect(() => {
+  //     // setAccessToken(localStorage.getItem("token"));
+  //     console.log("haha inside");
+  //     console.log(localStorage.getItem("isAuthenticated"));
+  //   }, []);
 
   const getToken = async () => {
     try {
@@ -43,11 +49,7 @@ const LandingPage = () => {
       setRole(findRole(token));
     }
   }, [token]);
-  useEffect(() => {
-    if (isAuthenticated && token) {
-      getProducts();
-    }
-  }, [isAuthenticated, token]);
+
   console.log("outside return: ", products);
   console.log("outside return: ", products.length);
   const getProducts = async () => {
@@ -73,12 +75,34 @@ const LandingPage = () => {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      getProducts();
+    }
+  }, [isAuthenticated, token]);
+
+  useEffect(() => {
+    role === "customer" &&
+      checkCustomer(token, setIsAlreadyCustomer, setIsLoading);
+    console.log("isAlreadyCustomer: ", isAlreadyCustomer);
+  }, [isAuthenticated, token, role]);
+
   return (
     <div>
+      {/* <p>hello world</p>
+      <CustomerView token={token}></CustomerView>
+      <ProductList products={products}></ProductList>
+      <LogoutButton></LogoutButton> */}
       {/* {isLoading && <SpinnerLoading></SpinnerLoading>} */}
-      {isAuthenticated && token && (
-        <SearchProduct token={token} setProducts={setProducts}></SearchProduct>
-      )}
+
+      {isAuthenticated &&
+        token &&
+        (role === "manager" || (role === "customer" && isAlreadyCustomer)) && (
+          <SearchProduct
+            token={token}
+            setProducts={setProducts}
+          ></SearchProduct>
+        )}
 
       {isAuthenticated && (!token || !role) && (
         <SpinnerLoading></SpinnerLoading>
@@ -87,12 +111,23 @@ const LandingPage = () => {
         <ManagerView token={token}></ManagerView>
       )}
       {isAuthenticated && token && role === "customer" && (
-        <CustomerView token={token}></CustomerView>
+        <CustomerView
+          token={token}
+          isAlreadyCustomer={isAlreadyCustomer}
+          isLoading={isLoading}
+        ></CustomerView>
       )}
       {/* <CustomerView></CustomerView> */}
-      {isAuthenticated && token && role && (
-        <ProductList products={products}></ProductList>
-      )}
+      {isAuthenticated &&
+        token &&
+        (role === "manager" || (role === "customer" && isAlreadyCustomer)) && (
+          <ProductList
+            products={products}
+            isLoading={isLoading}
+            role={role}
+            setProducts={setProducts}
+          ></ProductList>
+        )}
       <LogoutButton></LogoutButton>
     </div>
   );
