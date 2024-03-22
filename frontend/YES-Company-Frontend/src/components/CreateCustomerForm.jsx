@@ -1,13 +1,21 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 
-const CreateCustomerForm = ({ token }) => {
+const CreateCustomerForm = () => {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
   const [address, setAddress] = useState("");
   const [customer, setCustomer] = useState({});
+  const navigate = useNavigate();
+  // const location = useLocation();
+  // const stateData = location.state;
+  // console.log("location data", location.state);
 
-  const createCustomer = async () => {
+  const token = localStorage.getItem("token");
+
+  const createCustomer = async (e) => {
+    e.preventDefault();
     try {
       const response = await fetch("http://localhost:8080/customers", {
         method: "POST",
@@ -32,7 +40,9 @@ const CreateCustomerForm = ({ token }) => {
       setFirstName("");
       setLastName("");
       setAddress("");
-    } catch {
+      navigate("/landingPage");
+      console.log("navigate", navigate("/landingPage"));
+    } catch (error) {
       console.log("error");
       console.log(error.message);
     }
@@ -86,6 +96,7 @@ const CreateCustomerForm = ({ token }) => {
         <button type="submit" className="btn btn-primary">
           Submit
         </button>
+        <Link to="/landingPage">Go to LandingPage</Link>
       </form>
     </>
   );
