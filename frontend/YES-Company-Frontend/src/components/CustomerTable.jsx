@@ -44,31 +44,35 @@ const CustomerTable = () => {
         ></SearchCustomer>
       )}
       <h1>Customer List</h1>
-      {token && customers.length > 0 ? (
-        <table className="table table-hover">
-          <thead>
-            <tr>
-              <th scope="col">First Name</th>
-              <th scope="col">Last Name</th>
-              <th scope="col">Address</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading && <SpinnerLoading></SpinnerLoading>}
-            {customers.map((customer) => {
-              return (
-                <tr scope="row" key={customer.id}>
-                  <td>{customer.first_name}</td>
-                  <td>{customer.last_name}</td>
-                  <td>{customer.address}</td>
+      {!isLoading && (
+        <>
+          {token && customers.length > 0 ? (
+            <table className="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">First Name</th>
+                  <th scope="col">Last Name</th>
+                  <th scope="col">Address</th>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      ) : (
-        <p>No customers found</p>
+              </thead>
+              <tbody>
+                {customers.map((customer) => {
+                  return (
+                    <tr scope="row" key={customer.id}>
+                      <td>{customer.first_name}</td>
+                      <td>{customer.last_name}</td>
+                      <td>{customer.address}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <p>No customers found</p>
+          )}
+        </>
       )}
+      {isLoading && <SpinnerLoading></SpinnerLoading>}
       <Link to="/landingPage">Landing Page</Link>
     </div>
   );
