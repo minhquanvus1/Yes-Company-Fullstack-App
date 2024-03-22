@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const SearchProduct = ({ token, setProducts }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -38,6 +38,10 @@ const SearchProduct = ({ token, setProducts }) => {
     }
   };
 
+  useEffect(() => {
+    searchForProduct();
+  }, [searchTerm]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     searchForProduct();
@@ -48,7 +52,7 @@ const SearchProduct = ({ token, setProducts }) => {
         <input
           className="form-control me-2"
           type="search"
-          placeholder="Search"
+          placeholder="Search Product"
           aria-label="Search"
           value={searchTerm}
           onChange={handleChange}
