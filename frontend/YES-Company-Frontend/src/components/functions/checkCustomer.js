@@ -13,14 +13,18 @@ export const checkCustomer = async (
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    if (response.status === 200) {
-      setIsAlreadyCustomer(true);
-    } else {
-      setIsAlreadyCustomer(false);
-    }
-    setIsLoading(false);
     const responseData = await response.json();
     console.log(responseData);
+    if (response.status === 200) {
+      const customer = responseData.customer;
+      console.log("customer: ", customer);
+      setIsAlreadyCustomer(true);
+      return customer;
+    } else {
+      setIsAlreadyCustomer(false);
+      console.log("message: ", responseData.message);
+    }
+    setIsLoading(false);
   } catch (error) {
     console.log("error");
     console.log(error.error);
