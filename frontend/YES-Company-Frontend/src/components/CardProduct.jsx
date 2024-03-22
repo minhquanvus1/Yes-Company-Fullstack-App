@@ -1,7 +1,8 @@
 import React from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-
+import { addToCart } from "./functions/addToCart";
+import { useState, useEffect } from "react";
 const CardProduct = ({
   id,
   name,
@@ -9,8 +10,14 @@ const CardProduct = ({
   description,
   role,
   setProducts,
+  items,
+  setItems,
+  //   quantity,
+  //   setQuantity,
+  isCheckedOut,
 }) => {
   const token = localStorage.getItem("token");
+  const [quantity, setQuantity] = useState(0);
   const deleteProduct = async (e) => {
     e.preventDefault();
     axios
@@ -29,6 +36,10 @@ const CardProduct = ({
         console.log(error);
       });
   };
+
+  //   useEffect(() => {
+  //     setItems([]);
+  //   }, []);
   return (
     <>
       <div className="card" style={{ width: "18rem" }}>
@@ -60,6 +71,45 @@ const CardProduct = ({
               onClick={deleteProduct}
             >
               Delete
+            </button>
+          )}
+          {/* {role === "customer" && (
+            
+            <input
+              min="0"
+              //   max="20"
+              type="number"
+              id="typeNumber"
+              class="form-control"
+              onChange={(e) => {
+                setQuantity(e.target.value);
+              }}
+            />
+          )} */}
+          {role === "customer" && (
+            <div className="d-flex align-items-center">
+              <label htmlFor="typeNumber" className="me-2">
+                Quantity:
+              </label>
+              <input
+                min="0"
+                type="number"
+                id={`quantity-${id}`}
+                className="form-control"
+                // value={isCheckedOut ? 0 : quantity}
+                onChange={(e) => {
+                  setQuantity(e.target.value);
+                }}
+              />
+            </div>
+          )}
+
+          {role === "customer" && (
+            <button
+              className="text-decoration-none btn btn-sm btn-primary"
+              onClick={() => addToCart(id, parseInt(quantity), items, setItems)}
+            >
+              Add to Cart
             </button>
           )}
           {/* <button
