@@ -1,7 +1,34 @@
 import React from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
-import OrderItemQuantity from "./utils/OrderItemQuantity";
-const CardProduct = ({ id, name, unit_price, description }) => {
+
+const CardProduct = ({
+  id,
+  name,
+  unit_price,
+  description,
+  role,
+  setProducts,
+}) => {
+  const token = localStorage.getItem("token");
+  const deleteProduct = async (e) => {
+    e.preventDefault();
+    axios
+      .delete(`http://localhost:8080/products/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log("deleted product id: ", res.data.deleted);
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product.id !== id)
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <>
       <div className="card" style={{ width: "18rem" }}>
@@ -13,12 +40,35 @@ const CardProduct = ({ id, name, unit_price, description }) => {
           {/* <a href="#" className="btn btn-primary">
             Go somewhere
           </a> */}
-          <Link
+          {role === "manager" && (
+            <Link
+              to={`/products/${id}`}
+              className="text-decoration-none btn btn-sm btn-success"
+            >
+              Update
+            </Link>
+          )}
+          {/* <Link
             to={`/products/${id}`}
             className="text-decoration-none btn btn-sm btn-success"
           >
             Update
-          </Link>
+          </Link> */}
+          {role === "manager" && (
+            <button
+              className="text-decoration-none btn btn-sm btn-primary"
+              onClick={deleteProduct}
+            >
+              Delete
+            </button>
+          )}
+          {/* <button
+            className="text-decoration-none btn btn-sm btn-primary"
+            onClick={deleteProduct}
+          >
+            Delete
+          </button> */}
+
           {/* <div className="flex justify-content-between align-items-center">
             <button className="btn btn-primary" style={{ marginTop: "7px" }}>
               Quantity
