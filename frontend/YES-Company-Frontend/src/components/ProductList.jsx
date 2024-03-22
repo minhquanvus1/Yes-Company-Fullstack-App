@@ -82,10 +82,10 @@ const ProductList = ({
     <div>
       <h1>Product List</h1>
       {!isLoading && (
-        <div className="d-flex flex-wrap">
+        <div className="row row-cols-1 row-cols-md-5 g-2">
           {products.length > 0 ? (
             products.map((product) => (
-              <div key={product.id}>
+              <div className="col" key={product.id}>
                 <CardProduct
                   id={product.id}
                   name={product.name}
