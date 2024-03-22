@@ -1,10 +1,12 @@
 import React from "react";
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 
 const CreateProductForm = () => {
   const [name, setName] = useState("");
   const [unit_price, setUnitPrice] = useState("");
   const [description, setDescription] = useState("");
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
   const createProduct = async (e) => {
@@ -30,6 +32,7 @@ const CreateProductForm = () => {
       setName("");
       setUnitPrice("");
       setDescription("");
+      navigate("/landingPage");
     } catch (error) {
       console.log("error");
       console.log(error.error);
@@ -53,7 +56,7 @@ const CreateProductForm = () => {
           />
         </div>
         <div className="mb-3">
-          <label for="unit_price" className="form-label">
+          <label htmlFor="unit_price" className="form-label">
             Unit Price
           </label>
           <input
@@ -67,7 +70,7 @@ const CreateProductForm = () => {
           />
         </div>
         <div className="mb-3 form-check">
-          <label className="form-label" for="description">
+          <label className="form-label" htmlFor="description">
             Description
           </label>
           <input
@@ -84,6 +87,7 @@ const CreateProductForm = () => {
           Submit
         </button>
       </form>
+      <Link to="/landingPage">Go to LandingPage</Link>
     </>
   );
 };
