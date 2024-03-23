@@ -10,7 +10,7 @@ const UpdateProduct = () => {
   const [values, setValues] = useState({
     id: id,
     name: "",
-    unit_price: "",
+    unit_price: 0,
     description: "",
   });
 
@@ -63,13 +63,13 @@ const UpdateProduct = () => {
             <div>
               <label htmlFor="unit_price">Unit Price</label>
               <input
-                type="text"
+                type="number"
                 className="form-control"
                 id="unit_price"
                 placeholder="Enter Unit Price"
                 value={values.unit_price}
                 onChange={(e) =>
-                  setValues({ ...values, unit_price: e.target.value })
+                  setValues({ ...values, unit_price: parseInt(e.target.value) })
                 }
               />
             </div>
