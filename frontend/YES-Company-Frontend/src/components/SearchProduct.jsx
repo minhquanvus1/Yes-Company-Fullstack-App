@@ -47,7 +47,7 @@ const SearchProduct = ({ token, setProducts }) => {
     searchForProduct();
   };
   return (
-    <>
+    <div style={{ marginTop: "0.5%" }}>
       <form className="d-flex" onSubmit={handleSubmit}>
         <input
           className="form-control me-2"
@@ -56,12 +56,13 @@ const SearchProduct = ({ token, setProducts }) => {
           aria-label="Search"
           value={searchTerm}
           onChange={handleChange}
+          style={{ width: "80%" }}
         />
         <button className="btn btn-outline-success" type="submit">
           Search
         </button>
       </form>
-    </>
+    </div>
   );
 };
 
