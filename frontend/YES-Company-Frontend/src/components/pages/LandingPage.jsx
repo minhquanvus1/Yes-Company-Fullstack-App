@@ -18,6 +18,8 @@ const LandingPage = () => {
   const [products, setProducts] = useState([]);
   const [isAlreadyCustomer, setIsAlreadyCustomer] = useState(false);
   const [items, setItems] = useState([]);
+  //   const [isAuthenticatedFromLocalStorage, setIsAuthenticatedFromLocalStorage] =
+  //     useState("");
   //   const [quantity, setQuantity] = useState(0);
   const [isCheckedOut, setIsCheckedOut] = useState(false);
   const [customer, setCustomer] = useState({});
@@ -44,14 +46,25 @@ const LandingPage = () => {
     }
   };
   useEffect(() => {
-    if (isAuthenticated) {
-      getToken();
-    }
+    // const tokenFromLocalStorage = localStorage.getItem("token");
+    // if (
+    //   tokenFromLocalStorage !== "" &&
+    //   isAuthenticatedFromLocalStorage !== ""
+    // ) {
+    //   setAccessToken(tokenFromLocalStorage);
+    //   setIsAuthenticatedFromLocalStorage(isAuthenticatedFromLocalStorage);
+    // } else {
+    //   getToken();
+    // }
+    getToken();
+    // setAccessToken(localStorage.getItem("token"));
+    // setIsAuthenticatedFromLocalStorage(localStorage.getItem("isAuthenticated"));
   }, [isAuthenticated]);
 
   useEffect(() => {
     if (token) {
       setRole(findRole(token));
+      localStorage.setItem("role", findRole(token));
     }
   }, [token]);
 
@@ -101,6 +114,10 @@ const LandingPage = () => {
         } catch (error) {
           console.log("error");
           console.log(error.message);
+          if (error.message === "This Customer not found in backend database") {
+            setIsAlreadyCustomer(false);
+            setIsLoading(false);
+          }
         }
       }
     };
@@ -108,7 +125,7 @@ const LandingPage = () => {
   }, [isAuthenticated, token, role]);
   console.log("items: ", items);
   return (
-    <div>
+    <div style={{ alignItems: "center", marginLeft: "10%" }}>
       {/* <p>hello world</p>
       <CustomerView token={token}></CustomerView>
       <ProductList products={products}></ProductList>
@@ -144,7 +161,12 @@ const LandingPage = () => {
       {isAuthenticated &&
         token &&
         (role === "manager" || (role === "customer" && isAlreadyCustomer)) && (
-          <Link to="/orders" state={{ role: role }}>
+          <Link
+            to="/orders"
+            state={{ role: role }}
+            className="btn btn-success"
+            style={{ marginTop: "0.5%" }}
+          >
             {role === "manager" ? "All Orders" : "My Orders"}
           </Link>
         )}
@@ -161,10 +183,24 @@ const LandingPage = () => {
             setItems={setItems}
             // quantity={quantity}
             // setQuantity={setQuantity}
+            setIsCheckedOut={setIsCheckedOut}
             isCheckedOut={isCheckedOut}
           ></ProductList>
         )}
-      <LogoutButton></LogoutButton>
+      <div style={{ marginTop: "1%" }}>
+        <LogoutButton></LogoutButton>&nbsp;&nbsp;
+        {role === "customer" && isAlreadyCustomer && (
+          <button
+            className="btn btn-warning btn-sm"
+            style={{ marginLeft: "2%" }}
+            onClick={() => {
+              setItems([]);
+            }}
+          >
+            Reset Order
+          </button>
+        )}
+      </div>
     </div>
   );
 };
