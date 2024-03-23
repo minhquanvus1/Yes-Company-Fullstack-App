@@ -42,7 +42,7 @@ const CreateProductForm = () => {
     <>
       <form onSubmit={createProduct}>
         <div className="mb-3">
-          <label for="name" className="form-label">
+          <label htmlFor="name" className="form-label">
             Product Name
           </label>
           <input
