@@ -364,6 +364,38 @@ class YesCompanyTest(unittest.TestCase):
         self.assertEqual(data['products'], [])
         self.assertEqual(data['message'], 'No product found with the given name')
 
+#------------------- Test for GET /customers/<int:id> --------------------
+    def test_for_getting_customer_by_id_without_Authorization_header(self):
+        res = self.client().get('/customers/1')
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 401)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'Authorization header is expected.')
+        self.assertTrue(data['error'] == 401)
+    
+    def test_for_getting_customer_by_id_with_expired_token(self):
+        res = self.client().get('/customers/1', headers={'Authorization': self.manager_token_expired})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 401)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'Token is expired.')
+        self.assertTrue(data['error'] == 401)
+    
+    def test_for_getting_customer_by_id_that_does_not_exist(self):
+        res = self.client().get('/customers/100', headers={'Authorization': self.manager_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'The customer with the given id is not found')
+        self.assertTrue(data['error'] == 404)
+    
+    def test_for_getting_customer_by_id_successfully(self):
+        res = self.client().get('/customers/1', headers={'Authorization': self.manager_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['customer'])
+        self.assertIsInstance(data['customer'], dict)
+
 #-------------------- Test for POST /search-customers --------------------
 
     def test_for_searching_customers_without_Authorization_header(self):
