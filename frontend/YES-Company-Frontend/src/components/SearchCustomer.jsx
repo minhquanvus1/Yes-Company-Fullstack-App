@@ -68,6 +68,7 @@ const SearchCustomer = ({ token, setCustomers }) => {
             onChange={handleFirstNameChange}
           />
         </div>
+        &nbsp;&nbsp;
         <div style={{ width: "50%" }}>
           <input
             className="form-control me-2"
@@ -78,7 +79,12 @@ const SearchCustomer = ({ token, setCustomers }) => {
             onChange={handleLastNameChange}
           />
         </div>
-        <button className="btn btn-outline-success" type="submit">
+        &nbsp;&nbsp;
+        <button
+          className="btn btn-outline-success"
+          type="submit"
+          style={{ width: "18%" }}
+        >
           Search Customer
         </button>
       </form>
