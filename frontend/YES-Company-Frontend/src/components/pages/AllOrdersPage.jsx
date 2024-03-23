@@ -9,19 +9,25 @@ const AllOrdersPage = () => {
   const token = localStorage.getItem("token");
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
-  const { role } = location.state;
+  //   const { role } = location.state;
   //   const propsData = location.state;
   //   console.log("role in allorders: ", propsData);
   //   console.log("customer in allorder: ", customer);
   //   console.log("role in allorders: ", role);
   const customer = JSON.parse(localStorage.getItem("customer"));
   console.log("customer in allorder: ", customer);
-
+  const [roleFromLocalStorage, setRoleFromLocalStorage] = useState(
+    localStorage.getItem("role")
+  );
+  console.log("roleFromLocalStorage in allorders: ", roleFromLocalStorage);
+  useEffect(() => {
+    setRoleFromLocalStorage(localStorage.getItem("role"));
+  }, []);
   const getAllOrders = async () => {
     try {
       let response;
       setIsLoading(true);
-      if (role === "manager") {
+      if (roleFromLocalStorage === "manager") {
         response = await axios.get("http://localhost:8080/orders", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,6 +51,14 @@ const AllOrdersPage = () => {
       setIsLoading(false);
     } catch (error) {
       console.log(error);
+      setIsLoading(false);
+      if (error.response.status === 404) {
+        console.log(
+          "error message in getOrders of this Customer:",
+          error.response.data.message
+        );
+        setOrders([]);
+      }
     }
   };
   useEffect(() => {
@@ -60,6 +74,7 @@ const AllOrdersPage = () => {
       {!isLoading &&
         orders.length > 0 &&
         orders.map((order) => {
+          console.log("orderItems in allorderspage:", order.order_items);
           return (
             // <CardOrder
             //   key={order.id}
@@ -84,12 +99,13 @@ const AllOrdersPage = () => {
             >
               <CardOrder
                 // key={order.id}
-                orderId={order.id}
-                deliverDate={order.deliver_date}
-                comment={order.comment}
-                totalPrice={order.total_price}
-                role={role}
-                customerId={order.customer_id}
+                // orderId={order.id}
+                // deliverDate={order.deliver_date}
+                // comment={order.comment}
+                // totalPrice={order.total_price}
+                order={order}
+                role={roleFromLocalStorage}
+                // customerId={order.customer_id}
                 orders={orders}
                 setOrders={setOrders}
               />
