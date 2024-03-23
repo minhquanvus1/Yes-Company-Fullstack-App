@@ -5,20 +5,23 @@ import { getCustomerById } from "./functions/getCustomerById";
 import { useState, useEffect } from "react";
 
 const CardOrder = ({
-  orderId,
-  deliverDate,
-  comment,
-  totalPrice,
+  //   orderId,
+  //   deliverDate,
+  //   comment,
+  //   totalPrice,
+  order,
   role,
-  customerId,
+  //   customerId,
   orders,
   setOrders,
 }) => {
   const [customer, setCustomer] = useState({});
   const token = localStorage.getItem("token");
+  console.log("order haha:", order);
+  console.log("role ahah:", role);
   useEffect(() => {
     if (role === "manager") {
-      getCustomerById(token, customerId)
+      getCustomerById(token, order.customer_id)
         .then((response) => {
           setCustomer(response);
         })
@@ -31,7 +34,7 @@ const CardOrder = ({
   const deleteOrder = async () => {
     try {
       const response = await axios.delete(
-        `http://localhost:8080/orders/${orderId}`,
+        `http://localhost:8080/orders/${order.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,27 +54,31 @@ const CardOrder = ({
       <div
         className="card text-center mb-4"
         style={{
-          maxWidth: "540px",
+          width: "50%",
           display: "flex",
         }}
       >
         <div className="card-header">
           {role === "manager" && Object.keys(customer).length > 0
-            ? `Order ID: ${orderId} - Customer Name: ${customer.first_name} ${customer.last_name} - Customer Address: ${customer.address}`
-            : `Order ID: ${orderId}`}
+            ? `Order ID: ${order.id} - Customer Name: ${customer.first_name} ${customer.last_name} - Customer Address: ${customer.address}`
+            : `Order ID: ${order.id}`}
         </div>
         <div className="card-body">
-          <h5 className="card-title">{`Deliver Date: ${deliverDate}`}</h5>
-          <p className="card-text">{`Comment: ${comment}`}</p>
-          <Link to={`/orders/${orderId}`} className="btn btn-primary">
+          <h5 className="card-title">{`Deliver Date: ${order.deliver_date}`}</h5>
+          <p className="card-text">{`Comment: ${order.comment}`}</p>
+          <Link
+            to={`/orders/${order.id}`}
+            state={{ order: order }}
+            className="btn btn-primary"
+          >
             View Order
-          </Link>{" "}
+          </Link>
           &nbsp;
           <button className="btn btn-danger" onClick={deleteOrder}>
             Delete Order
           </button>
         </div>
-        <div className="card-footer text-body-secondary">{`Total Price: ${totalPrice}K (VND)`}</div>
+        <div className="card-footer text-body-secondary">{`Total Price: ${order.total_price}K (VND)`}</div>
       </div>
     </>
   );
