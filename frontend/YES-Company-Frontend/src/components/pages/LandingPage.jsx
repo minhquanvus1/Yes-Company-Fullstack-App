@@ -9,6 +9,7 @@ import ProductList from "../ProductList";
 import SpinnerLoading from "../utils/SpinnerLoading";
 import SearchProduct from "../SearchProduct";
 import { checkCustomer } from "../functions/checkCustomer";
+import { Link } from "react-router-dom";
 const LandingPage = () => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [token, setAccessToken] = useState("");
@@ -95,6 +96,7 @@ const LandingPage = () => {
             setIsLoading
           );
           setCustomer(customer);
+          localStorage.setItem("customer", JSON.stringify(customer));
           console.log("isAlreadyCustomer: ", isAlreadyCustomer);
         } catch (error) {
           console.log("error");
@@ -139,6 +141,13 @@ const LandingPage = () => {
           setIsCheckedOut={setIsCheckedOut}
         ></CustomerView>
       )}
+      {isAuthenticated &&
+        token &&
+        (role === "manager" || (role === "customer" && isAlreadyCustomer)) && (
+          <Link to="/orders" state={{ role: role }}>
+            {role === "manager" ? "All Orders" : "My Orders"}
+          </Link>
+        )}
       {/* <CustomerView></CustomerView> */}
       {isAuthenticated &&
         token &&
