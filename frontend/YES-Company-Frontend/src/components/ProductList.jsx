@@ -13,6 +13,7 @@ const ProductList = ({
   setItems,
   //   quantity,
   //   setQuantity,
+  setIsCheckedOut,
   isCheckedOut,
 }) => {
   //   const { isAuthenticated } = useAuth0();
@@ -97,6 +98,7 @@ const ProductList = ({
                   setItems={setItems}
                   //   quantity={quantity}
                   //   setQuantity={setQuantity}
+                  setIsCheckedOut={setIsCheckedOut}
                   isCheckedOut={isCheckedOut}
                 />
               </div>
