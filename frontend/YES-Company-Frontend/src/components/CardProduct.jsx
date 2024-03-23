@@ -14,6 +14,7 @@ const CardProduct = ({
   setItems,
   //   quantity,
   //   setQuantity,
+  setIsCheckedOut,
   isCheckedOut,
 }) => {
   const token = localStorage.getItem("token");
@@ -36,14 +37,31 @@ const CardProduct = ({
         console.log(error);
       });
   };
+  //   useEffect(() => {
+  //     if (quantity === 0) {
+  //       document.getElementById(`quantity-${id}`).value = 0;
+  //     }
+  //   }, [quantity]);
+  const resetQuantityFields = () => {
+    const quantityInputs = document.getElementsByClassName("quantity-input");
+    for (let input of quantityInputs) {
+      input.value = "";
+    }
+    setIsCheckedOut(false);
+  };
+  useEffect(() => {
+    if (isCheckedOut) {
+      resetQuantityFields();
+    }
+  }, [isCheckedOut]);
 
   //   useEffect(() => {
   //     setItems([]);
   //   }, []);
   return (
     <>
-      <div className="card" style={{ width: "18rem" }}>
-        {/* <img src="..." class="card-img-top" alt="..."/> */}
+      <div className="card" style={{ width: "18rem", height: "100%" }}>
+        {/* <img src="..." className="card-img-top" alt="..."/> */}
         <div className="card-body">
           <h5 className="card-title">{name}</h5>
           <p className="card-text">{unit_price}k (VND)</p>
@@ -59,6 +77,7 @@ const CardProduct = ({
               Update
             </Link>
           )}
+          &nbsp;
           {/* <Link
             to={`/products/${id}`}
             className="text-decoration-none btn btn-sm btn-success"
@@ -80,14 +99,17 @@ const CardProduct = ({
               //   max="20"
               type="number"
               id="typeNumber"
-              class="form-control"
+              className="form-control"
               onChange={(e) => {
                 setQuantity(e.target.value);
               }}
             />
           )} */}
           {role === "customer" && (
-            <div className="d-flex align-items-center">
+            <div
+              className="d-flex align-items-center"
+              style={{ marginTop: "5px" }}
+            >
               <label htmlFor="typeNumber" className="me-2">
                 Quantity:
               </label>
@@ -95,19 +117,33 @@ const CardProduct = ({
                 min="0"
                 type="number"
                 id={`quantity-${id}`}
-                className="form-control"
-                // value={isCheckedOut ? 0 : quantity}
+                className="form-control quantity-input"
                 onChange={(e) => {
                   setQuantity(e.target.value);
+                }}
+                style={{
+                  width: "10rem",
                 }}
               />
             </div>
           )}
-
           {role === "customer" && (
             <button
               className="text-decoration-none btn btn-sm btn-primary"
-              onClick={() => addToCart(id, parseInt(quantity), items, setItems)}
+              onClick={() => {
+                console.log("quantity: ", quantity);
+                console.log("typeof quantity", typeof quantity);
+                console.log(quantity === "");
+                console.log("parseInt quantity:", parseInt(quantity));
+                if (quantity === "" || parseInt(quantity) === 0) {
+                  alert("Please input quantity");
+                  return;
+                }
+                addToCart(id, parseInt(quantity), items, setItems);
+                // setQuantity(0);
+                // document.getElementById(`quantity-${id}`).value = 0;
+              }}
+              style={{ marginTop: "5%" }}
             >
               Add to Cart
             </button>
@@ -118,7 +154,6 @@ const CardProduct = ({
           >
             Delete
           </button> */}
-
           {/* <div className="flex justify-content-between align-items-center">
             <button className="btn btn-primary" style={{ marginTop: "7px" }}>
               Quantity
