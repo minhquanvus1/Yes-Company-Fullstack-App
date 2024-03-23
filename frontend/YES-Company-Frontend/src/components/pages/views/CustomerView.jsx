@@ -18,6 +18,7 @@ const CustomerView = ({
   const { user, isAuthenticated } = useAuth0();
   const [deliverDate, setDeliverDate] = useState("");
   const [comment, setComment] = useState("");
+  //   const [showAlert, setShowAlert] = useState(false);
 
   //   const [isAlreadyCustomer, setIsAlreadyCustomer] = useState(false);
   //   const checkCustomer = async () => {
@@ -69,6 +70,26 @@ const CustomerView = ({
       comment: comment,
     };
     console.log("checkoutobject: ", checkOutObject);
+    console.log("orderItems length:", checkOutObject.order_items.length);
+    if (
+      checkOutObject.order_items.length === 1 &&
+      checkOutObject.order_items[0].quantity === 0
+    ) {
+      //   setShowAlert(true);
+      alert("Please enter quantity for the item");
+      return;
+    }
+    let count = 0;
+    for (let item of checkOutObject.order_items) {
+      if (item.quantity === 0) {
+        count++;
+      }
+    }
+    console.log("count is:", count);
+    if (count === checkOutObject.order_items.length) {
+      alert("Please enter quantity for each item");
+      return;
+    }
     try {
       const response = await axios.post(
         "http://localhost:8080/orders",
@@ -81,6 +102,7 @@ const CustomerView = ({
       setComment("");
       setDeliverDate("");
       //   setQuantity(0);
+      //   document.getElementById(`quantity-${id}`).value = 0;
       setIsCheckedOut(true);
       return response.data.order;
     } catch (error) {
@@ -90,6 +112,11 @@ const CustomerView = ({
   };
   return (
     <div>
+      {/* {showAlert && (
+        <div className="alert alert-danger" role="alert">
+          Please enter quantity for the item
+        </div>
+      )} */}
       <div>
         <h1>Welcome to YES-Company</h1>
         <p>
