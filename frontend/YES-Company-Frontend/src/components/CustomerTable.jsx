@@ -36,7 +36,7 @@ const CustomerTable = () => {
     }
   }, [token]);
   return (
-    <div>
+    <div style={{ width: "80%", marginLeft: "10%", marginTop: "2%" }}>
       {token && (
         <SearchCustomer
           token={token}
@@ -73,7 +73,9 @@ const CustomerTable = () => {
         </>
       )}
       {isLoading && <SpinnerLoading></SpinnerLoading>}
-      <Link to="/landingPage">Landing Page</Link>
+      <Link to="/landingPage" className="btn btn-success">
+        Landing Page
+      </Link>
     </div>
   );
 };
