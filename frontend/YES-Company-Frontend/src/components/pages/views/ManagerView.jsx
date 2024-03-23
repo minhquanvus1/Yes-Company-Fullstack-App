@@ -14,10 +14,11 @@ const ManagerView = ({ token }) => {
           {isAuthenticated ? `Welcome ${user.name}!` : "You are not logged in!"}
         </p>
         <Link to="/customers">
-          <button>View Customers</button>
+          <button className="btn btn-success">View Customers</button>
         </Link>
+        &nbsp;&nbsp;
         <Link to="/products/create">
-          <button>Create Product</button>
+          <button className="btn btn-success">Create Product</button>
         </Link>
       </div>
     </div>
