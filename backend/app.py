@@ -107,6 +107,14 @@ def create_app(test_config=None):
         customers = Customer.query.all()
         print(customers)
         return jsonify({'customers': [customer.format() for customer in customers]})
+    
+    @APP.route('/customers/<int:id>', methods=['GET'])
+    @requires_auth('get:customerById')
+    def get_customer_by_id(payload, id):
+        customer = Customer.query.filter(Customer.id == id).one_or_none()
+        if customer is None:
+            abort(404, description="The customer with the given id is not found")
+        return jsonify({'customer': customer.format()})
 
     @APP.route('/search-customers', methods=['POST'])
     @requires_auth('search:customers')
