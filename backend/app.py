@@ -91,11 +91,13 @@ def create_app(test_config=None):
         for each_order_item in order_items:
             if len(each_order_item.keys()) != 2 or 'product_id' not in each_order_item.keys() or 'quantity' not in each_order_item.keys():
                 abort(400, description="product_id and quantity are required in each order_item, and only these two keys are allowed")
+            if each_order_item['product_id'] not in [product.id for product in Product.query.all()]:
+                abort(400, description="The product with the given id is not found")
         check_out_order = CheckOutOrder(**body)
         print(check_out_order.format())
         try:
             check_out_order.insert()
-            return jsonify({'order': check_out_order.format()})
+            return jsonify({'order': check_out_order.format()}), 201
         except:
             abort(422, description="The order could not be created due to the request body is not valid or the server is not able to process the request at the moment")
 
