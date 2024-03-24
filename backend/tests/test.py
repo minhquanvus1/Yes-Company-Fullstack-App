@@ -5,7 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from app import create_app
 from models import db,  Customer, OrderItem, Product, Order
-from auth import AuthError
 from config import test_config
 from sqlalchemy import text, create_engine
 from sqlalchemy.orm.session import close_all_sessions
@@ -18,7 +17,7 @@ load_dotenv()
 # TEST_DB_NAME = os.getenv('TEST_DB_NAME')
 
 class YesCompanyTest(unittest.TestCase):
-    engine = create_engine('postgresql://postgres:Sunghajung1@localhost:5432/YES-Company-Test')
+    # engine = create_engine(f'postgresql://{TEST_DB_USERNAME}:{TEST_DB_PASSWORD}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}')
 
     def setUp(self):
         """Define test variables and initialize app."""
@@ -28,9 +27,9 @@ class YesCompanyTest(unittest.TestCase):
         #     "SQLALCHEMY_TRACK_MODIFICATIONS": False}
         # )
         self.manager_token_expired = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRjNE5WN1pyeUppemVKdW5wblI0MyJ9.eyJpc3MiOiJodHRwczovL2Rldi10aW9pNGJuZmlzYzZiY2xpLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExNTYxOTgzMTY3OTE3MzcxMTA4NyIsImF1ZCI6Imh0dHBzOi8veWVzQ29tcGFueS9hcGkiLCJpYXQiOjE3MTA3NDg5MzksImV4cCI6MTcxMDc1NjEzOSwic2NvcGUiOiIiLCJhenAiOiJYREJEOGN5VDl1WVlnUVpqaEJHSVEzekF3UWF5Q29PSCIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpvcmRlcnMiLCJkZWxldGU6cHJvZHVjdHMiLCJnZXQ6Y3VzdG9tZXJzIiwiZ2V0Om9yZGVycyIsImdldDpvcmRlcnNCeUN1c3RvbWVySWQiLCJnZXQ6b3JkZXJzLWJ5LWRhdGUiLCJnZXQ6cHJvZHVjdHMiLCJwYXRjaDpvcmRlcnMiLCJwYXRjaDpwcm9kdWN0cyIsInBvc3Q6b3JkZXJzIiwicG9zdDpwcm9kdWN0cyIsInNlYXJjaDpjdXN0b21lcnMiLCJzZWFyY2g6cHJvZHVjdHMiXX0.KescLJH9vcUI8ch4wJT_O49bN-ZFUPBfFMTOdXCxexDbnV-u6sVYj9BGyu9fjF29Ih41WbUkXiyeiyBAwcYAJdMcQmEt51v3NqDNs5sLMGHXolN_JObvmYEs2rvIyeop1h9JkahWBknBAQBoZoWyQULAq4_RTP9uM5a3mZlHMIBsfkukpqSxdz83RLWTgBKYcJrkNCeAjzN-Xsd5bs5B2G9dCykHIh2GZs6s8711VOnCEbrMxYg5rVJkJDTAlRkRPgxJhyBgxgjiwXVN3YJAl8Bgh5eCnyRYwbewqY4ke-n3msuKH2L4rnrwCMEyANWUhnlfLuOOar0MvfTaXJyMYQ'
-        self.manager_token = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRjNE5WN1pyeUppemVKdW5wblI0MyJ9.eyJpc3MiOiJodHRwczovL2Rldi10aW9pNGJuZmlzYzZiY2xpLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExNTYxOTgzMTY3OTE3MzcxMTA4NyIsImF1ZCI6WyJodHRwczovL3llc0NvbXBhbnkvYXBpIiwiaHR0cHM6Ly9kZXYtdGlvaTRibmZpc2M2YmNsaS51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzExMjUxNzIyLCJleHAiOjE3MTEzMzgxMjIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJhenAiOiJYREJEOGN5VDl1WVlnUVpqaEJHSVEzekF3UWF5Q29PSCIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpvcmRlcnMiLCJkZWxldGU6cHJvZHVjdHMiLCJnZXQ6Y3VzdG9tZXJCeUlkIiwiZ2V0OmN1c3RvbWVycyIsImdldDpvcmRlcnMiLCJnZXQ6b3JkZXJzQnlDdXN0b21lcklkIiwiZ2V0Om9yZGVycy1ieS1kYXRlIiwiZ2V0OnByb2R1Y3RCeUlkIiwiZ2V0OnByb2R1Y3RzIiwicGF0Y2g6b3JkZXJzIiwicGF0Y2g6cHJvZHVjdHMiLCJwb3N0Om9yZGVycyIsInBvc3Q6cHJvZHVjdHMiLCJzZWFyY2g6Y3VzdG9tZXJzIiwic2VhcmNoOnByb2R1Y3RzIl19.ZQ1qPwyzXdd9jmG0zWmfrOTnoJskZ96czk7fcie1AbVL35KZD7VEsVmiyt6ODTgE_cWmMn5io0oAAM74Oi4ZpKBL0C75BQzG8sVxMrV7owz0BiM_4qdHJ6fgylqjKdg2sHraHUcJCgFc-cFi4Cdpgp9dZ92XqoCRcixoAJ9pw97HpFK68fVg4X73p3EOSxvp1fDnWffIF_-VL_CIMd5KRMiVMNI_OnZ7JRoQdHyDWFfi8QsmehNszXgh-e7YqF8gCtyO5lncZjjiiJFQCvjc-urhwE1_XbC69G9DTLGiEWBAblyxe9iEq54cOi0oaXNKb_CKhFhWUiTperZjQeidUg'
-        self.customer_token_for_add_non_exist_customer = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRjNE5WN1pyeUppemVKdW5wblI0MyJ9.eyJpc3MiOiJodHRwczovL2Rldi10aW9pNGJuZmlzYzZiY2xpLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2NWZhOGM1MmI1NDM2YzljOTI3M2JhNWUiLCJhdWQiOlsiaHR0cHM6Ly95ZXNDb21wYW55L2FwaSIsImh0dHBzOi8vZGV2LXRpb2k0Ym5maXNjNmJjbGkudXMuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTcxMTI1MTY2OSwiZXhwIjoxNzExMzM4MDY5LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwiYXpwIjoiWERCRDhjeVQ5dVlZZ1FaamhCR0lRM3pBd1FheUNvT0giLCJwZXJtaXNzaW9ucyI6WyJjaGVjazpjdXN0b21lcnMiLCJkZWxldGU6b3JkZXJzIiwiZ2V0Om9yZGVyc0J5Q3VzdG9tZXJJZCIsImdldDpwcm9kdWN0cyIsInBhdGNoOm9yZGVycyIsInBvc3Q6Y3VzdG9tZXJzIiwicG9zdDpvcmRlcnMiLCJzZWFyY2g6cHJvZHVjdHMiXX0.GVl1YcQ-Way4GZekY3dO-DNRjYkgJvAaur29KK1ZvQeuV1UKDOlDuwS7hBjyA3FMsCH6mh1Xxj3Uz7bJUq26GcOjZvzzFUijMJRdWAwsRMxW-GHPBJrmTIMgbRPyeP_EQATheqaUGQcKPtcO3BaWAWDHg5c_7JHBvhknBqUTCAqPhsbz7hIP-WHv0ctdyd-aeOpkuqoGYhjXPJe0Y8oXqdVQXFBwisrmAM65H0WhiPHqrJvaNwdkGx_90DXng196mNUuUpH-hxTnGa8MBLRAekMJbCzO60qfIx5waoegah_4zfPH7dBUoHviPEHeeTGhGdGw188L8VtXyxdaUiI4Kg'
-        self.customer_token = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRjNE5WN1pyeUppemVKdW5wblI0MyJ9.eyJpc3MiOiJodHRwczovL2Rldi10aW9pNGJuZmlzYzZiY2xpLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExMTQ3NDYwODQ4NTc3ODk1OTE5OSIsImF1ZCI6WyJodHRwczovL3llc0NvbXBhbnkvYXBpIiwiaHR0cHM6Ly9kZXYtdGlvaTRibmZpc2M2YmNsaS51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzExMjUxNjI4LCJleHAiOjE3MTEzMzgwMjgsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJhenAiOiJYREJEOGN5VDl1WVlnUVpqaEJHSVEzekF3UWF5Q29PSCIsInBlcm1pc3Npb25zIjpbImNoZWNrOmN1c3RvbWVycyIsImRlbGV0ZTpvcmRlcnMiLCJnZXQ6b3JkZXJzQnlDdXN0b21lcklkIiwiZ2V0OnByb2R1Y3RzIiwicGF0Y2g6b3JkZXJzIiwicG9zdDpjdXN0b21lcnMiLCJwb3N0Om9yZGVycyIsInNlYXJjaDpwcm9kdWN0cyJdfQ.HvFrCGN1_FB9tJ0Al9xEq4AcQzMfk9NuWruRzy6ATQs4w3LMxNZ1WwRTWiH3MdNnw5DhNCMsYqHngzKPSg0BWAX6rkIQztBsjH3D9uoRp-1mO5zxCl-Dpo-X8sRGX81VjiGkHP3FMbuwEf37Gb-go1vuUCn_6Jh8XLC4lxJRVFahbwB99I6XJH1PSynn2NyWiigtXNxuRomQvniRcGXpRiYK1EYYmY1s2_TbR7wjtFMOxx2VMztnPviSUUPxcAxmS08VcDOJyjK75GQYD_jJe2e0oSx_2wphTBnVvv2PlqKq9uux_-Pda53J6N_p2WM8bC3qettqEsitECb7qFlN5w'
+        self.manager_token = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRjNE5WN1pyeUppemVKdW5wblI0MyJ9.eyJpc3MiOiJodHRwczovL2Rldi10aW9pNGJuZmlzYzZiY2xpLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExNTYxOTgzMTY3OTE3MzcxMTA4NyIsImF1ZCI6WyJodHRwczovL3llc0NvbXBhbnkvYXBpIiwiaHR0cHM6Ly9kZXYtdGlvaTRibmZpc2M2YmNsaS51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzExMjkxMjU5LCJleHAiOjE3MTEzNzc2NTksInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJhenAiOiJYREJEOGN5VDl1WVlnUVpqaEJHSVEzekF3UWF5Q29PSCIsInBlcm1pc3Npb25zIjpbImRlbGV0ZTpvcmRlcnMiLCJkZWxldGU6cHJvZHVjdHMiLCJnZXQ6Y3VzdG9tZXJCeUlkIiwiZ2V0OmN1c3RvbWVycyIsImdldDpvcmRlcnMiLCJnZXQ6b3JkZXJzQnlDdXN0b21lcklkIiwiZ2V0Om9yZGVycy1ieS1kYXRlIiwiZ2V0OnByb2R1Y3RCeUlkIiwiZ2V0OnByb2R1Y3RzIiwicGF0Y2g6b3JkZXJzIiwicGF0Y2g6cHJvZHVjdHMiLCJwb3N0Om9yZGVycyIsInBvc3Q6cHJvZHVjdHMiLCJzZWFyY2g6Y3VzdG9tZXJzIiwic2VhcmNoOnByb2R1Y3RzIl19.VX-et7AHNW_zYERtWomIBph9EcBxnJGzrlyeis-ez9bV4PQi51NzdbT1fD0NiQva7b-ZYTX2ehyQmLzbiIYCIbmg7abOFh7PkR-QmXpIQ8dglGVb0w-wBV_60DWuh9qanbGaJuhVYGfz4HUhJokQKprPRgnV2bv3S2p18WCmUrlyD-gNpvbJ88wk5uYVPHybDIW80w8soKk5z2bE7Vrzud8aZzI-D-IzSEg-Mq2_JPAMDUTCGssXk782Fu3xtuKIMJ6c9BoRtR6NZgbXtfvlsDT4KwrmrC4c5XGxYMsOLPA9joSpPSOFWylq_Mk3nKhpKXFgv1lFw2xxOMiN4DaBDA'
+        self.customer_token_for_add_non_exist_customer = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRjNE5WN1pyeUppemVKdW5wblI0MyJ9.eyJpc3MiOiJodHRwczovL2Rldi10aW9pNGJuZmlzYzZiY2xpLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2NWZhOGM1MmI1NDM2YzljOTI3M2JhNWUiLCJhdWQiOlsiaHR0cHM6Ly95ZXNDb21wYW55L2FwaSIsImh0dHBzOi8vZGV2LXRpb2k0Ym5maXNjNmJjbGkudXMuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTcxMTI5MTMzNSwiZXhwIjoxNzExMzc3NzM1LCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwiYXpwIjoiWERCRDhjeVQ5dVlZZ1FaamhCR0lRM3pBd1FheUNvT0giLCJwZXJtaXNzaW9ucyI6WyJjaGVjazpjdXN0b21lcnMiLCJkZWxldGU6b3JkZXJzIiwiZ2V0Om9yZGVyc0J5Q3VzdG9tZXJJZCIsImdldDpwcm9kdWN0cyIsInBhdGNoOm9yZGVycyIsInBvc3Q6Y3VzdG9tZXJzIiwicG9zdDpvcmRlcnMiLCJzZWFyY2g6cHJvZHVjdHMiXX0.H73UnhwsbsgKzRV6w9t011hRyhYLeEdpcZukKVgq29A8e7eoquFmqmLF-U99RqQCkDGfx-WG-E344q6D9sIP6h4BfTUOX61LjJlNtaqTiAqxhCzEYxRDelbESXMqPmsTybtSWi0cwXrHLLQPO5kN0gcrs3zqOBBPhKFF99v9A7fz7YT3wx-Rh1Ah03u4dHZFWiZk_CO9HhQxgMU7dUVWZ_-T-OGK3o6jMRxy4KGrCygcJoxiT5qRTMaVtAvV_tAIjhGY7OLOTwdLqYRIbBwPKnQcGeuEipaFP5UM1V1q-0USww69GMP8Y_5qXiyUrgOSyn7iC4WC6j43peW3g5xjrg'
+        self.customer_token = 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRjNE5WN1pyeUppemVKdW5wblI0MyJ9.eyJpc3MiOiJodHRwczovL2Rldi10aW9pNGJuZmlzYzZiY2xpLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJnb29nbGUtb2F1dGgyfDExMTQ3NDYwODQ4NTc3ODk1OTE5OSIsImF1ZCI6WyJodHRwczovL3llc0NvbXBhbnkvYXBpIiwiaHR0cHM6Ly9kZXYtdGlvaTRibmZpc2M2YmNsaS51cy5hdXRoMC5jb20vdXNlcmluZm8iXSwiaWF0IjoxNzExMjkxMjk5LCJleHAiOjE3MTEzNzc2OTksInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJhenAiOiJYREJEOGN5VDl1WVlnUVpqaEJHSVEzekF3UWF5Q29PSCIsInBlcm1pc3Npb25zIjpbImNoZWNrOmN1c3RvbWVycyIsImRlbGV0ZTpvcmRlcnMiLCJnZXQ6b3JkZXJzQnlDdXN0b21lcklkIiwiZ2V0OnByb2R1Y3RzIiwicGF0Y2g6b3JkZXJzIiwicG9zdDpjdXN0b21lcnMiLCJwb3N0Om9yZGVycyIsInNlYXJjaDpwcm9kdWN0cyJdfQ.IQPO2Fd2uBalcZba3MB_eqgVtEG6z9JvYPhO5tp9sTmiMpqMn_bYJKtUQj68cRxItKFSTn0Ch1a0XCnzdH1E6jq8YBmPHoz5B38O09uRHJYMqA4hhcFDi6pJFGrHb6OKjC5j-3xkaCfSzzdZ5-WOQhq0swbldRV64bheAZ8tXs_mu5t7dMr4y7c7wteNPJF7RrBunGU-CoWsuuElyYllr_MwBpcX9DdtulZEvC-a5lUTLNJa3JKLvs_IkDwf36L6gmZw8so1u7KvvdpOEHmQdk74JMxuw7Bwgkcwrk6IfjsiOA_hroZyLvyT0OhloUofPcRMADL4XMoAAZy_BI8sfw'
         self.app = create_app(test_config)
         self.customer = {
             "first_name": "John",
@@ -72,7 +71,32 @@ class YesCompanyTest(unittest.TestCase):
         self.order_add = {
             "customer_id": 1,
             "comment": "This is a test order to add",
-            "deliver_date": "2024-03-20 15:30:00"
+            "deliver_date": "2024-03-20 15:30:00",
+            "order_items": [
+                {
+                    "product_id": 1,
+                    "quantity": 2
+                },
+                {
+                    "product_id": 2,
+                    "quantity": 3
+                }
+            ]
+        }
+        self.order_add_with_product_does_not_exist = {
+            "customer_id": 1,
+            "comment": "This is a test order to add",
+            "deliver_date": "2024-03-20 15:30:00",
+            "order_items": [
+                {
+                    "product_id": 1,
+                    "quantity": 2
+                },
+                {
+                    "product_id": 10,
+                    "quantity": 3
+                }
+            ]
         }
         self.order_item_add = {
             "order_id": 1,
@@ -105,7 +129,7 @@ class YesCompanyTest(unittest.TestCase):
             db.session.add(OrderItem(**self.order_item))
             db.session.commit()
     def tearDown(self):
-        engine = create_engine('postgresql://postgres:Sunghajung1@localhost:5432/YES-Company-Test')
+        # engine = create_engine(f'postgresql://{TEST_DB_USERNAME}:{TEST_DB_PASSWORD}@{TEST_DB_HOST}:{TEST_DB_PORT}/{TEST_DB_NAME}')
 
         """Executed after each test"""
         print('tearDown: starting...')
@@ -183,6 +207,14 @@ class YesCompanyTest(unittest.TestCase):
         self.assertEqual(data['message'], 'Authorization header is expected.')
         self.assertTrue(data['error'] == 401)
     
+    def test_get_customers_with_customer_role_returns_403_forbidden_error(self):
+        res = self.client().get('/customers', headers={'Authorization': self.customer_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 403)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'Permission not found.')
+        self.assertTrue(data['error'] == 403)
+    
 #--------------------- Test for GET /products --------------------
     def test_get_products_without_Authorization_header(self):
         res = self.client().get('/products')
@@ -199,6 +231,24 @@ class YesCompanyTest(unittest.TestCase):
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], 'Token is expired.')
         self.assertTrue(data['error'] == 401)
+    
+    def test_get_products_successfully_with_manager_role(self):
+        res = self.client().get('/products', headers={'Authorization': self.manager_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['products'])
+        self.assertIsInstance(data['products'], list)
+        for each_product in data['products']:
+            self.assertIsInstance(each_product, dict)
+    
+    def test_get_products_successfully_with_customer_role(self):
+        res = self.client().get('/products', headers={'Authorization': self.customer_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['products'])
+        self.assertIsInstance(data['products'], list)
+        for each_product in data['products']:
+            self.assertIsInstance(each_product, dict)
         
 #------------------------ Test for GET /orders --------------------
 
@@ -217,6 +267,23 @@ class YesCompanyTest(unittest.TestCase):
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], 'Token is expired.')
         self.assertTrue(data['error'] == 401)
+    
+    def test_get_all_orders_of_all_customers_successfully_with_manager_role(self):
+        res = self.client().get('/orders', headers={'Authorization': self.manager_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['orders'])
+        self.assertIsInstance(data['orders'], list)
+        for each_order in data['orders']:
+            self.assertIsInstance(each_order, dict)
+            
+    def test_get_all_orders_of_all_customers_with_customer_role_return_403_forbidden_error(self):
+        res = self.client().get('/orders', headers={'Authorization': self.customer_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 403)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'Permission not found.')
+        self.assertTrue(data['error'] == 403)
 
 #------------------------ Test for GET /orders-by-date --------------------
 
@@ -249,7 +316,16 @@ class YesCompanyTest(unittest.TestCase):
         self.assertEqual(res.status_code, 400)
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], 'The deliver_date must have the string value of a valid date and time format (YYYY-MM-DD HH:MM:SS)')
-        
+    
+    def test_get_orders_by_date_successfully_with_manager_role(self):
+        res = self.client().get('/orders-by-date?deliver_date=2024-03-17 15:30:00', headers={'Authorization': self.manager_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['orders'])
+        self.assertIsInstance(data['orders'], list)
+        for each_order in data['orders']:
+            self.assertIsInstance(each_order, dict)
+            
 #------------------------ Test for POST /customers --------------------
 
     def test_create_customer_without_Authorization_header(self):
@@ -321,6 +397,14 @@ class YesCompanyTest(unittest.TestCase):
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], 'The product with the given name already exists')
         self.assertTrue(data['error'] == 409)
+    
+    def test_create_a_product_with_customer_role_returns_403_forbidden_error(self):
+        res = self.client().post('/products', json=self.product, headers={'Authorization': self.customer_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 403)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'Permission not found.')
+        self.assertTrue(data['error'] == 403)
     
 #------------------ Test for POST /search-products --------------------
 
@@ -432,7 +516,16 @@ class YesCompanyTest(unittest.TestCase):
         self.assertEqual(data['message'], 'No customer found with the given first_name and last_name')
         self.assertEqual(data['customers'], [])
         print('end test')
-        
+    
+    def test_for_searching_customer_successfully_with_manager_role(self):
+        res = self.client().post('/search-customers', json={"first_name": "John", "last_name": "Doe"}, headers={"Authorization": self.manager_token})
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['customers'])
+        self.assertIsInstance(data['customers'], list)
+        for each_customer in data['customers']:
+            self.assertIsInstance(each_customer, dict)
+            
 #------------------ Test for GET /products/<int:id> --------------------
 
     def test_for_getting_product_without_Authorization_header(self):
@@ -711,6 +804,46 @@ class YesCompanyTest(unittest.TestCase):
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], 'The deliver_date must be a future date and time')
         self.assertTrue(data['error'] == 422)
+
+# -------------------- Test for POST /orders --------------------
+    def test_for_creating_order_without_Authorization_header(self):
+        res = self.client().post('/orders', json=self.order_add)
+        self.assertEqual(res.status_code, 401)
+        data = json.loads(res.data)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'Authorization header is expected.')
+        self.assertTrue(data['error'] == 401)
+    
+    def test_for_creating_order_with_expired_token(self):
+        res = self.client().post('/orders', json=self.order_add, headers={'Authorization': self.manager_token_expired})
+        self.assertEqual(res.status_code, 401)
+        data = json.loads(res.data)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'Token is expired.')
+        self.assertTrue(data['error'] == 401)
+    
+    def test_for_creating_order_with_invalid_request_body(self):
+        res = self.client().post('/orders', json={'customer_id': 1, 'comment': 'This is a test order to add'}, headers={'Authorization': self.manager_token})
+        self.assertEqual(res.status_code, 400)
+        data = json.loads(res.data)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'customer_id, deliver_date, comment, order_items and quantity are required in the request body')
+        self.assertTrue(data['error'] == 400)
+    
+    def test_for_creating_order_successfully_with_customer_role(self):
+        res = self.client().post('/orders', json=self.order_add, headers={'Authorization': self.customer_token})
+        self.assertEqual(res.status_code, 201)
+        data = json.loads(res.data)
+        self.assertTrue(data['order'])
+        print('order created: ', data['order'])
+    
+    def test_for_creating_order_that_has_product_does_not_exist_return_400_error(self):
+        res = self.client().post('/orders', json=self.order_add_with_product_does_not_exist, headers={'Authorization': self.customer_token})
+        self.assertEqual(res.status_code, 400)
+        data = json.loads(res.data)
+        self.assertFalse(data['success'])
+        self.assertEqual(data['message'], 'The product with the given id is not found')
+        self.assertTrue(data['error'] == 400)
         
 if __name__ == "__main__":
     unittest.main()
