@@ -1,4 +1,4 @@
-import { useState } from "react";
+// import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 import LoginButton from "./components/LoginButton";
@@ -13,9 +13,42 @@ import CustomerTable from "./components/CustomerTable";
 import UpdateProduct from "./components/UpdateProduct";
 import AllOrdersPage from "./components/pages/AllOrdersPage";
 import OrderDetailsPage from "./components/pages/OrderDetailsPage";
+// import { useState, useEffect } from "react";
+// import axios from "axios";
 function App() {
   const { isLoading, error } = useAuth0();
 
+  // function useAccessToken() {
+  //   useEffect(() => {
+  //     async function fetchAccessToken() {
+  //       const data = {
+  //         client_id: "XDBD8cyT9uYYgQZjhBGIQ3zAwQayCoOH",
+  //         client_secret:
+  //           "dsnK8431RJRlVoMs7XiRfyVUyNKsHn1fpBgFpgtsPefeIOMooPi_siAnOkv1a5Sw",
+  //         audience: "https://dev-tioi4bnfisc6bcli.us.auth0.com/api/v2/",
+  //         grant_type: "client_credentials",
+  //       };
+
+  //       const config = {
+  //         method: "post",
+  //         url: "https://dev-tioi4bnfisc6bcli.us.auth0.com/oauth/token",
+  //         headers: { "Content-Type": "application/json" },
+  //         data: data,
+  //       };
+
+  //       try {
+  //         const response = await axios(config);
+  //         setAccessToken(response.data.access_token);
+  //       } catch (error) {
+  //         console.error(error);
+  //       }
+  //     }
+
+  //     fetchAccessToken();
+  //   }, []);
+
+  //   return accessToken;
+  // }
   return (
     <>
       <Routes>
