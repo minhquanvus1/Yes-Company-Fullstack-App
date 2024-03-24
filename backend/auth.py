@@ -1,9 +1,18 @@
+import os
 import json
 from flask import request, abort
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
 from typing import List
+
+# AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
+# ALGORITHMS = json.loads(os.getenv('ALGORITHMS'))
+# API_AUDIENCE = os.getenv('API_AUDIENCE')
+# print(f'AUTH0_DOMAIN: {AUTH0_DOMAIN}')
+# print(f'ALGORITHMS: {ALGORITHMS}')
+# print(f'API_AUDIENCE: {API_AUDIENCE}')
+# print(os.environ)
 
 AUTH0_DOMAIN = 'dev-tioi4bnfisc6bcli.us.auth0.com'
 ALGORITHMS = ['RS256']
