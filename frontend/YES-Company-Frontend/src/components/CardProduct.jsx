@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { addToCart } from "./functions/addToCart";
 import { useState, useEffect } from "react";
+import { baseURL } from "../baseURL";
+
 const CardProduct = ({
   id,
   name,
@@ -22,7 +24,7 @@ const CardProduct = ({
   const deleteProduct = async (e) => {
     e.preventDefault();
     axios
-      .delete(`http://localhost:8080/products/${id}`, {
+      .delete(`${baseURL}/products/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

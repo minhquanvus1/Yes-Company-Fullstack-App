@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import CardOrder from "../CardOrder";
 import SpinnerLoading from "../utils/SpinnerLoading";
 import { useLocation, Link } from "react-router-dom";
+import { baseURL } from "../../baseURL";
 const AllOrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const token = localStorage.getItem("token");
@@ -28,14 +29,14 @@ const AllOrdersPage = () => {
       let response;
       setIsLoading(true);
       if (roleFromLocalStorage === "manager") {
-        response = await axios.get("http://localhost:8080/orders", {
+        response = await axios.get(`${baseURL}/orders`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
       } else {
         response = await axios.get(
-          `http://localhost:8080/customers/${customer["id"]}/orders`,
+          `${baseURL}/customers/${customer["id"]}/orders`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

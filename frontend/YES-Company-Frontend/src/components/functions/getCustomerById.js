@@ -1,7 +1,9 @@
 import axios from "axios";
+import { baseURL } from "../../baseURL";
+
 export const getCustomerById = async (token, id) => {
   try {
-    const response = await axios.get(`http://localhost:8080/customers/${id}`, {
+    const response = await axios.get(`${baseURL}/customers/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

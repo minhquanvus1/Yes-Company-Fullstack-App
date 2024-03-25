@@ -4,6 +4,7 @@ import CreateCustomerForm from "./CreateCustomerForm";
 import ProductList from "./ProductList";
 import CreateProductForm from "./CreateProductForm";
 import { useNavigate } from "react-router-dom";
+import { baseURL } from "../baseURL";
 
 const LandingPage = () => {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
@@ -34,7 +35,7 @@ const LandingPage = () => {
 
   const checkCustomer = async () => {
     try {
-      const response = await fetch("http://localhost:8080/check-customer", {
+      const response = await fetch(`${baseURL}/check-customer`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import { baseURL } from "../baseURL";
 
 const CreateCustomerForm = () => {
   const [first_name, setFirstName] = useState("");
@@ -17,7 +18,7 @@ const CreateCustomerForm = () => {
   const createCustomer = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/customers", {
+      const response = await fetch(`${baseURL}/customers`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

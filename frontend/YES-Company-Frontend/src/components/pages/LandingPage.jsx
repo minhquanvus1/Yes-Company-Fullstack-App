@@ -10,6 +10,7 @@ import SpinnerLoading from "../utils/SpinnerLoading";
 import SearchProduct from "../SearchProduct";
 import { checkCustomer } from "../functions/checkCustomer";
 import { Link } from "react-router-dom";
+import { baseURL } from "../../baseURL";
 const LandingPage = () => {
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
   const [token, setAccessToken] = useState("");
@@ -73,7 +74,7 @@ const LandingPage = () => {
   const getProducts = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:8080/products", {
+      const response = await fetch(`${baseURL}/products`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

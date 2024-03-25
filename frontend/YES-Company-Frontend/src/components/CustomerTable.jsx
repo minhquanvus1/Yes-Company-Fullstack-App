@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import SpinnerLoading from "./utils/SpinnerLoading";
 import SearchCustomer from "./SearchCustomer";
 import { Link } from "react-router-dom";
+import { baseURL } from "../baseURL";
+
 const CustomerTable = () => {
   const [customers, setCustomers] = useState([]);
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -12,7 +14,7 @@ const CustomerTable = () => {
     const getCustomers = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch("http://localhost:8080/customers", {
+        const response = await fetch(`${baseURL}/customers`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

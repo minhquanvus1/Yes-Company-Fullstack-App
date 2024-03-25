@@ -2,6 +2,7 @@ import React from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { baseURL } from "../baseURL";
 
 const UpdateProduct = () => {
   const token = localStorage.getItem("token");
@@ -16,7 +17,7 @@ const UpdateProduct = () => {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/products/${id}`, {
+      .get(`${baseURL}/products/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -34,7 +35,7 @@ const UpdateProduct = () => {
     const { id, ...updatedValues } = values;
     e.preventDefault();
     axios
-      .patch(`http://localhost:8080/products/${id}`, updatedValues, {
+      .patch(`${baseURL}/products/${id}`, updatedValues, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

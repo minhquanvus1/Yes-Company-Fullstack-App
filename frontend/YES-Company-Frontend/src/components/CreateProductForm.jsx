@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { baseURL } from "../baseURL";
 
 const CreateProductForm = () => {
   const [name, setName] = useState("");
@@ -12,7 +13,7 @@ const CreateProductForm = () => {
   const createProduct = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:8080/products", {
+      const response = await fetch(`${baseURL}/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

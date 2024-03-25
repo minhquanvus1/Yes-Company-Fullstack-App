@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { getCustomerById } from "./functions/getCustomerById";
 import { useState, useEffect } from "react";
+import { baseURL } from "../baseURL";
 
 const CardOrder = ({
   //   orderId,
@@ -33,14 +34,11 @@ const CardOrder = ({
 
   const deleteOrder = async () => {
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/orders/${order.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.delete(`${baseURL}/orders/${order.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const deletedOrderId = response.data.deleted;
       const newOrders = orders.filter((order) => order.id !== deletedOrderId);
       setOrders(newOrders);

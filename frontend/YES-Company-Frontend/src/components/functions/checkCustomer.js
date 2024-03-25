@@ -1,3 +1,5 @@
+import { baseURL } from "../../baseURL";
+
 export const checkCustomer = async (
   token,
   setIsAlreadyCustomer,
@@ -5,7 +7,7 @@ export const checkCustomer = async (
 ) => {
   try {
     setIsLoading(true);
-    const response = await fetch("http://localhost:8080/check-customer", {
+    const response = await fetch(`${baseURL}/check-customer`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

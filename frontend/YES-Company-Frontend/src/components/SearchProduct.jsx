@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { baseURL } from "../baseURL";
 
 const SearchProduct = ({ token, setProducts }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -10,7 +11,7 @@ const SearchProduct = ({ token, setProducts }) => {
 
   const searchForProduct = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/search-products`, {
+      const response = await fetch(`${baseURL}/search-products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
