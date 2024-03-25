@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         domain={domain}
         clientId={clientId}
         authorizationParams={{
-          redirect_uri: window.location,
+          redirect_uri: window.location.slice(0, -1) + "/landingPage",
           // redirect_uri:
           //   "https://yes-company-frontend-react.onrender.com/landingPage",
           audience: "https://yesCompany/api",
