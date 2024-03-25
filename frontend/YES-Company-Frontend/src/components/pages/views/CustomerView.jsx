@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import SpinnerLoading from "../../utils/SpinnerLoading";
 import { formatDeliverDate } from "../../functions/formatDeliverDate";
+import { baseURL } from "../../../baseURL";
 
 const CustomerView = ({
   token,
