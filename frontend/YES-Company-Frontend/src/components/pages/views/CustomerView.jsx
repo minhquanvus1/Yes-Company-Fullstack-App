@@ -91,11 +91,9 @@ const CustomerView = ({
       return;
     }
     try {
-      const response = await axios.post(
-        "http://localhost:8080/orders",
-        checkOutObject,
-        { headers: headers }
-      );
+      const response = await axios.post(`${baseURL}/orders`, checkOutObject, {
+        headers: headers,
+      });
       console.log(response);
       console.log("Order created successfully!: ", response.data.order);
       setItems([]);
