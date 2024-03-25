@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   //change port for production
   preview: {
-    port: 3000,
+    port: 3001,
     // host: "https://yes-company-frontend-react.onrender.com",
     // https: true,
   },
