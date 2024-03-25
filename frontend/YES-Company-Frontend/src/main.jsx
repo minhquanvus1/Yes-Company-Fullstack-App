@@ -11,8 +11,8 @@ console.log(domain);
 console.log(clientId);
 // const [accessToken, setAccessToken] = useState("");
 // const accessToken = useAccessToken();
-const url = window.location.toString();
-const redirect_uri = url.slice(0, -1) + "/landingPage";
+// const url = window.location.toString();
+// const redirect_uri = url.slice(0, -1) + "/landingPage";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
@@ -20,11 +20,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         domain={domain}
         clientId={clientId}
         authorizationParams={{
-          redirect_uri: redirect_uri,
+          redirect_uri: window.location.origin,
           // redirect_uri:
           //   "https://yes-company-frontend-react.onrender.com/landingPage",
           audience: "https://yesCompany/api",
-          scope: "openid",
+          // scope: "openid",
         }}
         // useRefreshTokens={true}
         // cacheLocation="localstorage"
