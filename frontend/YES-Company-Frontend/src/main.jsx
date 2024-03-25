@@ -24,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           // redirect_uri:
           //   "https://yes-company-frontend-react.onrender.com/landingPage",
           audience: "https://yesCompany/api",
+          scope: "openid",
         }}
         // useRefreshTokens={true}
         // cacheLocation="localstorage"
