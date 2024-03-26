@@ -583,6 +583,9 @@ There are three types of errors:
 
 ## Deployment
 
+- The Backend of the app has been deployed on Render. You can access it by clicking on this link: [YES-Company App (Backend)](https://yes-company.onrender.com/)
+- This Backend API URL is also integrated with the Frontend of the app, which is also hosted on Render, so that the Frontend can interact with the Backend API.
+
 ## Author:
 
 Quan Tran

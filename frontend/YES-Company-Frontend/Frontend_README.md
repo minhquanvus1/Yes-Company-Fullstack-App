@@ -68,6 +68,9 @@ npm run dev
 
 ## Deployment
 
+- The Frontend React has been deployed on Render. You can access the Frontend React at this URL: [YES-Company-Frontend](https://yes-company-frontend-react.onrender.com/).
+- This hosted Frontend React is connected to the Backend API that is also hosted on Render.
+
 ## Author:
 
 Quan Tran
