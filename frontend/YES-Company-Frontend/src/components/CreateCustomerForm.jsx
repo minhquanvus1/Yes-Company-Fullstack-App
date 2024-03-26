@@ -94,7 +94,11 @@ const CreateCustomerForm = () => {
             }}
           />
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={first_name === "" || last_name === "" || address === ""}
+        >
           Submit
         </button>
         <Link to="/landingPage">Go to LandingPage</Link>
