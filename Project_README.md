@@ -12,3 +12,20 @@
 
 * For more details about the Frontend, please refer to the [Frontend_README.md](frontend/YES-Company-Frontend/Frontend_README.md) file.
 * For more details about the Backend, please refer to the [Backend_README.md](backend/Backend_README.md) file.
+
+Since the app requires Authentication, these are the accounts (username, password) for logging in, as for different Role:
+
+**Customer (this is already a Customer, with some Orders already made):**
+
+- username: tohixew898@nimadir.com
+- password: Guitarbadon1
+
+**Customer (this is for new Customer that does not exist in Backend database, so you can register as a new Customer):**
+
+- username: lomav42443@ikumaru.com
+- password: Guitarbadon1
+
+**Manager:**
+
+- username: wobigeg207@glaslack.com
+- password: Guitarbadon1
