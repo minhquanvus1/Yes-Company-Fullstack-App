@@ -1,0 +1,8 @@
+__pycache__
+
+my_env/
+
+.env
+Backend_README.md
+error.txt
+test_app.py
